@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,6 +34,8 @@ namespace TaskRunner
 
             var commandLineIdentifier = SyntaxFactory.Identifier("commandLine");
 
+            var syntaxToken = SyntaxFactory.Identifier("args");
+
             var methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), "Run")
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddParameterListParameters(SyntaxFactory.Parameter(new SyntaxList<AttributeListSyntax>(),
@@ -41,15 +44,22 @@ namespace TaskRunner
                     commandLineIdentifier,
                     null))
                 .WithBody(SyntaxFactory.Block(SyntaxFactory.IfStatement(
-                    EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskA")), 
+                    EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskA")),
                         SyntaxFactory.Block(
-                            SimpleMemberAccessExpression(ObjectCreationExpression("TaskA"), "Run")
-                            ), 
+                            SimpleMemberAccessExpression(ObjectCreationExpression("TaskA"), "Run")),
                         SyntaxFactory.ElseClause(
                             SyntaxFactory.IfStatement(
                             EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskB")), SyntaxFactory.Block(
-                                SimpleMemberAccessExpression(ObjectCreationExpression("TaskB"), "Run")
-                                ))))));
+
+                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                                    SyntaxFactory.ParseTypeName("int"),
+                                    SyntaxFactory.SeparatedList(new[]
+                                    {
+                                        SyntaxFactory.VariableDeclarator(syntaxToken, null, SyntaxFactory.EqualsValueClause(ObjectCreationExpression(new []{ "TaskB", "Args"})))
+                                    })
+                                    )),
+                                SimpleMemberAccessExpression(ObjectCreationExpression("TaskB"), "Run", "args")
+                            ))))));
 
             classDeclaration = classDeclaration.AddMembers(methodDeclaration);
 
@@ -60,19 +70,34 @@ namespace TaskRunner
             var code = syntaxFactory.NormalizeWhitespace().ToString();
         }
 
-        private static ObjectCreationExpressionSyntax ObjectCreationExpression(string name)
+        private static ObjectCreationExpressionSyntax ObjectCreationExpression(string name, params string[] args)
         {
-            return SyntaxFactory.ObjectCreationExpression(
-                SyntaxFactory.IdentifierName(
-                    SyntaxFactory.Identifier(name)));
+            return ObjectCreationExpression(new[] { name }, args);
         }
 
-        private static ExpressionStatementSyntax SimpleMemberAccessExpression(ObjectCreationExpressionSyntax @object, string name)
+        private static ObjectCreationExpressionSyntax ObjectCreationExpression(string[] names, params string[] args)
         {
+            var identifierNameSyntax = names.Length == 1
+                ? (TypeSyntax)SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(names[0]))
+                : SyntaxFactory.QualifiedName(SyntaxFactory.ParseName(names[0]), (SimpleNameSyntax)SyntaxFactory.ParseName(names[1]));
+
+            var separatedSyntaxList = SyntaxFactory.SeparatedList(args
+                .Select(s => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(s)))));
+
+            return SyntaxFactory.ObjectCreationExpression(identifierNameSyntax,
+                SyntaxFactory.ArgumentList(separatedSyntaxList), null);
+        }
+
+        private static ExpressionStatementSyntax SimpleMemberAccessExpression(ExpressionSyntax @object, string name, params string[] args)
+        {
+            var separatedSyntaxList = SyntaxFactory.SeparatedList(args
+                .Select(s => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(s)))));
+
             return SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.InvocationExpression(
                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                        @object, SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(name)))));
+                        @object, SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(name))), 
+                    SyntaxFactory.ArgumentList(separatedSyntaxList)));
         }
 
         private static BinaryExpressionSyntax EqualsExpression(ExpressionSyntax left, ExpressionSyntax right)
