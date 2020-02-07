@@ -1,6 +1,6 @@
 namespace TaskRunner
 {
-    class TaskA : ITask
+    public class TaskA : ITask
     {
         public void Run()
         {

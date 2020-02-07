@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using TaskRunner;
 
 namespace TaskRunner
 {
@@ -18,10 +21,10 @@ namespace TaskRunner
         {
             new TaskA().Run();
 
+            var compilationUnitSyntax = SyntaxFactory.CompilationUnit();
 
-            var syntaxFactory = SyntaxFactory.CompilationUnit();
-
-            syntaxFactory = syntaxFactory.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")));
+            compilationUnitSyntax = compilationUnitSyntax.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")));
+            compilationUnitSyntax = compilationUnitSyntax.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("TaskRunner")));
 
             var @namespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("DynamicTaskRunner"))
                 .NormalizeWhitespace();
@@ -32,19 +35,21 @@ namespace TaskRunner
             classDeclaration = classDeclaration
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
+            classDeclaration = classDeclaration.AddBaseListTypes(
+                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("ITaskRunner")));
+
             var commandLineIdentifier = SyntaxFactory.Identifier("commandLine");
 
-            var syntaxToken = SyntaxFactory.Identifier("args");
-
-            var methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), "Run")
+            var methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddParameterListParameters(SyntaxFactory.Parameter(new SyntaxList<AttributeListSyntax>(),
                     new SyntaxTokenList(),
                     SyntaxFactory.ParseTypeName("string"),
                     commandLineIdentifier,
                     null))
-                .WithBody(SyntaxFactory.Block(SyntaxFactory.IfStatement(
-                    EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskA")),
+                .WithBody(SyntaxFactory.Block(
+                    
+                    SyntaxFactory.IfStatement(EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskA")),
                         SyntaxFactory.Block(
                             SimpleMemberAccessExpression(ObjectCreationExpression("TaskA"), "Run")),
                         SyntaxFactory.ElseClause(
@@ -52,10 +57,12 @@ namespace TaskRunner
                             EqualsExpression(SyntaxFactory.IdentifierName(commandLineIdentifier), LiteralExpression("TaskB")), SyntaxFactory.Block(
 
                                 SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
-                                    SyntaxFactory.ParseTypeName("int"),
+                                    SyntaxFactory.ParseTypeName("var"),
                                     SyntaxFactory.SeparatedList(new[]
                                     {
-                                        SyntaxFactory.VariableDeclarator(syntaxToken, null, SyntaxFactory.EqualsValueClause(ObjectCreationExpression(new []{ "TaskB", "Args"})))
+                                        SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("args"), 
+                                            null, 
+                                            SyntaxFactory.EqualsValueClause(ObjectCreationExpression(new []{ "TaskB", "Args"})))
                                     })
                                     )),
                                 SimpleMemberAccessExpression(ObjectCreationExpression("TaskB"), "Run", "args")
@@ -65,9 +72,26 @@ namespace TaskRunner
 
             @namespace = @namespace.AddMembers(classDeclaration);
 
-            syntaxFactory = syntaxFactory.AddMembers(@namespace);
+            compilationUnitSyntax = compilationUnitSyntax.AddMembers(@namespace);
 
-            var code = syntaxFactory.NormalizeWhitespace().ToString();
+            var code = compilationUnitSyntax.NormalizeWhitespace().ToString();
+
+            var references = new List<string>
+            {
+                "mscorlib.dll",
+                "System.Private.CoreLib.dll",
+                "System.Console.dll",
+                "System.Runtime.dll",
+                typeof(ITaskRunner).Assembly.Location
+            };
+
+            var assembly = Compiler.Compile(compilationUnitSyntax, references);
+
+            var type = assembly.GetType("DynamicTaskRunner.Runner");
+
+            var thing = (ITaskRunner)Activator.CreateInstance(type);
+
+            thing.Run("TaskA");
         }
 
         private static ObjectCreationExpressionSyntax ObjectCreationExpression(string name, params string[] args)
@@ -119,7 +143,12 @@ namespace TaskRunner
         }
     }
 
-    class TaskRunner
+    public interface ITaskRunner
+    {
+        void Run(string commandLine);
+    }
+
+    class TaskRunner : ITaskRunner
     {
         public void Run(string commandLine)
         {
@@ -131,6 +160,27 @@ namespace TaskRunner
             {
                 var args = new TaskB.Args();
 
+                new TaskB().Run(args);
+            }
+        }
+    }
+}
+
+
+
+namespace DynamicTaskRunner
+{
+    public class Runner : ITaskRunner
+    {
+        public void Run(string commandLine)
+        {
+            if (commandLine == "TaskA")
+            {
+                new TaskA().Run();
+            }
+            else if (commandLine == "TaskB")
+            {
+                var args = new TaskB.Args();
                 new TaskB().Run(args);
             }
         }

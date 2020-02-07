@@ -2,9 +2,9 @@ using System;
 
 namespace TaskRunner
 {
-    class TaskB : ITask<TaskB.Args>
+    public class TaskB : ITask<TaskB.Args>
     {
-        internal class Args
+        public class Args
         {
             public bool BoolProp { get; set; }
             public string StringProp { get; set; }

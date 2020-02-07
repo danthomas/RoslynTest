@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace TaskRunner
 {
-    class ArgDefs<T>
+    public class ArgDefs<T>
     {
         private List<SwitchDef> _switches;
 
