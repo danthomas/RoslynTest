@@ -9,6 +9,64 @@ using NUnit.Framework;
 
 namespace TaskRunner
 {
+    class RunnerBuilder
+    {
+        public NamespaceDeclarationSyntax Namespace;
+
+        public RunnerBuilder()
+        {
+            CompilationUnitSyntax = SyntaxFactory.CompilationUnit();
+        }
+
+        public CompilationUnitSyntax CompilationUnitSyntax { get; set; }
+        public ClassDeclarationSyntax ClassDeclaration { get; set; }
+
+        public RunnerBuilder WithUsings(params string[] usings)
+        {
+            CompilationUnitSyntax = CompilationUnitSyntax.AddUsings(usings
+                .Select(x => SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(x))).ToArray());
+
+            return this;
+        }
+
+        public RunnerBuilder WithNamespace(string name)
+        {
+            Namespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(name))
+                 .NormalizeWhitespace();
+            return this;
+        }
+
+        public RunnerBuilder WithClass(string name, string[] bases)
+        {
+            ClassDeclaration = SyntaxFactory
+                .ClassDeclaration(name);
+
+            ClassDeclaration = ClassDeclaration
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            foreach (var @base in bases)
+            {
+                ClassDeclaration = ClassDeclaration.AddBaseListTypes(
+                    SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(@base)));
+            }
+
+            return this;
+        }
+
+        public RunnerBuilder WithField(string type, string name)
+        {
+            ClassDeclaration = ClassDeclaration.AddMembers(
+                SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(type),
+                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
+                        {
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(name))
+                        }))
+                ));
+            return this;
+        }
+    }
+
     public class Tests
     {
         [SetUp]
@@ -19,43 +77,16 @@ namespace TaskRunner
         [Test]
         public void TaskATest()
         {
-            var compilationUnitSyntax = SyntaxFactory.CompilationUnit();
-
-            compilationUnitSyntax = compilationUnitSyntax.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")));
-            compilationUnitSyntax = compilationUnitSyntax.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Microsoft.Extensions.DependencyInjection")));
-            compilationUnitSyntax = compilationUnitSyntax.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("TaskRunner")));
-
-            var @namespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("DynamicTaskRunner"))
-                .NormalizeWhitespace();
-
-            var classDeclaration = SyntaxFactory
-                .ClassDeclaration("TaskRunner");
-
-            classDeclaration = classDeclaration
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
-            classDeclaration = classDeclaration.AddBaseListTypes(
-                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("ITaskRunner")));
+            var runnerBuilder = new RunnerBuilder()
+                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "TaskRunner")
+                .WithNamespace("DynamicTaskRunner")
+                .WithClass("TaskRunner", new[] { "ITaskRunner" })
+                .WithField("IServiceProvider", "_serviceProvider")
+                .WithField("IState", "_state");
 
 
-            classDeclaration = classDeclaration.AddMembers(
-                SyntaxFactory.FieldDeclaration(
-                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("IServiceProvider"),
-                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
-                        {
-                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("_serviceProvider"))
-                        }))
-                    ),
-                SyntaxFactory.FieldDeclaration(
-                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("IState"),
-                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
-                        {
-                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("_state"))
-                        }))
-                    )
-                );
 
-            classDeclaration = classDeclaration.AddMembers(
+            runnerBuilder.ClassDeclaration = runnerBuilder.ClassDeclaration.AddMembers(
                 SyntaxFactory.ConstructorDeclaration(SyntaxFactory.List<AttributeListSyntax>(),
                     new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
                     SyntaxFactory.Identifier("TaskRunner"),
@@ -180,13 +211,13 @@ namespace TaskRunner
                                 )
                             )))));
 
-            classDeclaration = classDeclaration.AddMembers(methodDeclaration);
+            runnerBuilder.ClassDeclaration = runnerBuilder.ClassDeclaration.AddMembers(methodDeclaration);
 
-            @namespace = @namespace.AddMembers(classDeclaration);
+            runnerBuilder.Namespace = runnerBuilder.Namespace.AddMembers(runnerBuilder.ClassDeclaration);
 
-            compilationUnitSyntax = compilationUnitSyntax.AddMembers(@namespace);
+            runnerBuilder.CompilationUnitSyntax = runnerBuilder.CompilationUnitSyntax.AddMembers(runnerBuilder.Namespace);
 
-            var code = compilationUnitSyntax.NormalizeWhitespace().ToString();
+            var code = runnerBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
 
             var references = new List<string>
             {
@@ -217,7 +248,7 @@ namespace TaskRunner
                 Solution = new Solution { Id = 123 }
             };
 
-            var assembly = Compiler.Compile(compilationUnitSyntax, references);
+            var assembly = Compiler.Compile(runnerBuilder.CompilationUnitSyntax, references);
 
             var type = assembly.GetType("DynamicTaskRunner.TaskRunner");
 
@@ -227,10 +258,10 @@ namespace TaskRunner
 
             taskRunner.Run(new RunTaskCommand("TaskA"));
 
-            taskRunner.Run(new RunTaskCommand("TaskB"));
+            taskRunner.Run(new RunTaskCommand("TaskB -BoolProp true -StringProp ABCD"));
 
             Assert.AreEqual(@"TaskA
-TaskB 123  False", console.Text);
+TaskB 123 ABCD True", console.Text);
         }
 
         private static ExpressionStatementSyntax AssignArgsPropValue(string propName, SyntaxKind propType)
