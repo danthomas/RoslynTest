@@ -29,9 +29,9 @@ namespace TaskRunner
                                   .WithField("IServiceProvider", "_serviceProvider")
                                   .WithField("IState", "_state")
                                   .WithConstructor(constructorBuilder =>
-                                  {
-                                      
-                                  });
+                                      {
+                                          constructorBuilder.WithParameter(parameterBuilder => { });
+                                      });
 
 
 

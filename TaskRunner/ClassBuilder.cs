@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -42,42 +41,8 @@ namespace TaskRunner
         public ClassBuilder WithConstructor(Action<ConstructorBuilder> action)
         {
             var constructorBuilder = new ConstructorBuilder();
-
             action(constructorBuilder);
-
-            ClassDeclaration = ClassDeclaration.AddMembers(
-                SyntaxFactory.ConstructorDeclaration(SyntaxFactory.List<AttributeListSyntax>(),
-                    new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
-                    SyntaxFactory.Identifier("TaskRunner"),
-                    SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
-                    {
-                        SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                            new SyntaxTokenList(),
-                            SyntaxFactory.ParseTypeName("IServiceProvider"),
-                            SyntaxFactory.Identifier("serviceProvider"),
-                            null),
-                        SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                            new SyntaxTokenList(),
-                            SyntaxFactory.ParseTypeName("IState"),
-                            SyntaxFactory.Identifier("state"),
-                            null)
-                    })),
-                    null,
-                    SyntaxFactory.Block(
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                SyntaxFactory.IdentifierName("_serviceProvider"),
-                                SyntaxFactory.IdentifierName("serviceProvider")
-                            )
-                        ),
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                SyntaxFactory.IdentifierName("_state"),
-                                SyntaxFactory.IdentifierName("state")
-                            )
-                        )
-
-                    )));
+            ClassDeclaration = ClassDeclaration.AddMembers(constructorBuilder.ConstructorDeclaration);
             return this;
         }
     }
