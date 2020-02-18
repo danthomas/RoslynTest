@@ -9,83 +9,6 @@ using NUnit.Framework;
 
 namespace TaskRunner
 {
-    public class NamespaceBuilder
-    {
-        public NamespaceBuilder(string name)
-        {
-            Namespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(name))
-                .NormalizeWhitespace();
-        }
-
-        public NamespaceDeclarationSyntax Namespace { get; set; }
-
-        public NamespaceBuilder WithClass(string name, string[] bases, Action<ClassBuilder> action)
-        {
-            var classBuilder = new ClassBuilder(name, bases);
-            action(classBuilder);
-            Namespace = Namespace.AddMembers(classBuilder.ClassDeclaration);
-            return this;
-        }
-    }
-
-    public class ClassBuilder
-    {
-        public ClassBuilder(string name, string[] bases)
-        {
-            ClassDeclaration = SyntaxFactory
-                .ClassDeclaration(name);
-
-            ClassDeclaration = ClassDeclaration
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
-            foreach (var @base in bases)
-            {
-                ClassDeclaration = ClassDeclaration.AddBaseListTypes(
-                    SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(@base)));
-            }
-        }
-
-        public ClassDeclarationSyntax ClassDeclaration { get; set; }
-
-        public ClassBuilder WithField(string type, string name)
-        {
-            ClassDeclaration = ClassDeclaration.AddMembers(
-                SyntaxFactory.FieldDeclaration(
-                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(type),
-                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
-                        {
-                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(name))
-                        }))
-                ));
-
-            return this;
-        }
-    }
-
-    public class CompilationUnitBuilder
-    {
-        public CompilationUnitBuilder()
-        {
-            CompilationUnitSyntax = SyntaxFactory.CompilationUnit();
-        }
-
-        public CompilationUnitSyntax CompilationUnitSyntax { get; set; }
-
-        public CompilationUnitBuilder WithNamespace(string name, Action<NamespaceBuilder> action)
-        {
-            action(new NamespaceBuilder(name));
-            return this;
-        }
-
-        public CompilationUnitBuilder WithUsings(params string[] usings)
-        {
-            CompilationUnitSyntax = CompilationUnitSyntax.AddUsings(usings
-                .Select(x => SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(x))).ToArray());
-
-            return this;
-        }
-    }
-
     public class Tests
     {
         [SetUp]
@@ -96,118 +19,86 @@ namespace TaskRunner
         [Test]
         public void TaskATest()
         {
-
-            NamespaceDeclarationSyntax namespaceDeclaration = null;
-            
-
             var runnerBuilder = new CompilationUnitBuilder()
                 .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "TaskRunner")
                 .WithNamespace("DynamicTaskRunner", namespaceBuilder =>
                 {
-                    namespaceBuilder.WithClass("TaskRunner", new[] {"ITaskRunner"}, classBuilder =>
-                        {
-                            classBuilder
-                                .WithField("IServiceProvider", "_serviceProvider")
-                                .WithField("IState", "_state");
+                    namespaceBuilder.WithClass("TaskRunner", new[] { "ITaskRunner" }, classBuilder =>
+                          {
+                              classBuilder
+                                  .WithField("IServiceProvider", "_serviceProvider")
+                                  .WithField("IState", "_state")
+                                  .WithConstructor(constructorBuilder =>
+                                  {
+                                      
+                                  });
 
-                            classBuilder.ClassDeclaration = classBuilder.ClassDeclaration.AddMembers(
-               SyntaxFactory.ConstructorDeclaration(SyntaxFactory.List<AttributeListSyntax>(),
-                   new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
-                   SyntaxFactory.Identifier("TaskRunner"),
-                   SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
-                   {
-                        SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                            new SyntaxTokenList(),
-                            SyntaxFactory.ParseTypeName("IServiceProvider"),
-                            SyntaxFactory.Identifier("serviceProvider"),
-                            null),
-                        SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                            new SyntaxTokenList(),
-                            SyntaxFactory.ParseTypeName("IState"),
-                            SyntaxFactory.Identifier("state"),
-                            null)
-                   })),
-                   null,
-                   SyntaxFactory.Block(
-                       SyntaxFactory.ExpressionStatement(
-                       SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                           SyntaxFactory.IdentifierName("_serviceProvider"),
-                           SyntaxFactory.IdentifierName("serviceProvider")
-                       )
-                       ),
-                       SyntaxFactory.ExpressionStatement(
-                           SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                               SyntaxFactory.IdentifierName("_state"),
-                               SyntaxFactory.IdentifierName("state")
-                           )
-                       )
 
-                       )));
 
-                            var methodDeclaration = SyntaxFactory.MethodDeclaration(
-                                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")
-                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                        .AddParameterListParameters(SyntaxFactory.Parameter(new SyntaxList<AttributeListSyntax>(),
-                                    new SyntaxTokenList(),
-                                    SyntaxFactory.ParseTypeName("IRunTaskCommand"),
-                                    SyntaxFactory.Identifier("runTaskCommand"),
-                                    null))
-                                .WithBody(SyntaxFactory.Block(
-                                    SyntaxFactory.IfStatement(EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskA")),
-                                        SyntaxFactory.Block(
-                                            SimpleMemberAccessExpression(SyntaxFactory.InvocationExpression(
-                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                    SyntaxFactory.IdentifierName("_serviceProvider"),
-                                                    SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
-                                                        SyntaxFactory.TypeArgumentList(
-                                                            SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                            {
+                              var methodDeclaration = SyntaxFactory.MethodDeclaration(
+                                      SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")
+                                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                                          .AddParameterListParameters(SyntaxFactory.Parameter(new SyntaxList<AttributeListSyntax>(),
+                                      new SyntaxTokenList(),
+                                      SyntaxFactory.ParseTypeName("IRunTaskCommand"),
+                                      SyntaxFactory.Identifier("runTaskCommand"),
+                                      null))
+                                  .WithBody(SyntaxFactory.Block(
+                                      SyntaxFactory.IfStatement(EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskA")),
+                                          SyntaxFactory.Block(
+                                              SimpleMemberAccessExpression(SyntaxFactory.InvocationExpression(
+                                                  SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                      SyntaxFactory.IdentifierName("_serviceProvider"),
+                                                      SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
+                                                          SyntaxFactory.TypeArgumentList(
+                                                              SyntaxFactory.SeparatedList(new TypeSyntax[]
+                                                              {
                                                 SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("TaskA"))
-                                                            })
-                                                        ))
-                                                ),
-                                                SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                )
-                                            ), "Run")),
-                                        SyntaxFactory.ElseClause(
-                                            SyntaxFactory.IfStatement(
-                                            EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskB")),
-                                            SyntaxFactory.Block(
-                                                SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
-                                                    SyntaxFactory.ParseTypeName("var"),
-                                                    SyntaxFactory.SeparatedList(new[]
-                                                    {
+                                                              })
+                                                          ))
+                                                  ),
+                                                  SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
+                                                  )
+                                              ), "Run")),
+                                          SyntaxFactory.ElseClause(
+                                              SyntaxFactory.IfStatement(
+                                              EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskB")),
+                                              SyntaxFactory.Block(
+                                                  SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
+                                                      SyntaxFactory.ParseTypeName("var"),
+                                                      SyntaxFactory.SeparatedList(new[]
+                                                      {
                                         SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("args"),
                                             null,
                                             SyntaxFactory.EqualsValueClause(ObjectCreationExpression(new []{ "TaskB", "Args"})))
-                                                    })
-                                                    )),
-                                                AssignArgsPropValue("BoolProp", SyntaxKind.BoolKeyword),
-                                                AssignArgsPropValue("StringProp", SyntaxKind.StringKeyword),
-                                                SyntaxFactory.ExpressionStatement(
-                                                    SyntaxFactory.InvocationExpression(
-                                                        SyntaxFactory.MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            SyntaxFactory.InvocationExpression(
-                                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                    SyntaxFactory.IdentifierName("_serviceProvider"),
-                                                                    SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
-                                                                        SyntaxFactory.TypeArgumentList(
-                                                                            SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                                            {
+                                                      })
+                                                      )),
+                                                  AssignArgsPropValue("BoolProp", SyntaxKind.BoolKeyword),
+                                                  AssignArgsPropValue("StringProp", SyntaxKind.StringKeyword),
+                                                  SyntaxFactory.ExpressionStatement(
+                                                      SyntaxFactory.InvocationExpression(
+                                                          SyntaxFactory.MemberAccessExpression(
+                                                              SyntaxKind.SimpleMemberAccessExpression,
+                                                              SyntaxFactory.InvocationExpression(
+                                                                  SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                                                                      SyntaxFactory.IdentifierName("_serviceProvider"),
+                                                                      SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
+                                                                          SyntaxFactory.TypeArgumentList(
+                                                                              SyntaxFactory.SeparatedList(new TypeSyntax[]
+                                                                              {
                                                                 SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("TaskB"))
-                                                                            })
-                                                                        ))
-                                                                ),
-                                                                SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                                )
-                                                            ),
-                                                            SyntaxFactory.IdentifierName(
-                                                                SyntaxFactory.Identifier("Run")
-                                                            )
-                                                        ),
-                                                        SyntaxFactory.ArgumentList(
-                                                            SyntaxFactory.SeparatedList(new[] {
+                                                                              })
+                                                                          ))
+                                                                  ),
+                                                                  SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
+                                                                  )
+                                                              ),
+                                                              SyntaxFactory.IdentifierName(
+                                                                  SyntaxFactory.Identifier("Run")
+                                                              )
+                                                          ),
+                                                          SyntaxFactory.ArgumentList(
+                                                              SyntaxFactory.SeparatedList(new[] {
                                                 SyntaxFactory.Argument(
                                                     SyntaxFactory.IdentifierName(
                                                         SyntaxFactory.Identifier("args")
@@ -227,28 +118,23 @@ namespace TaskRunner
                                                     SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
                                                     )
                                                 ))
-                                                            }
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                                )
-                                            )))));
+                                                              }
+                                                              )
+                                                          )
+                                                      )
+                                                  )
+                                                  )
+                                              )))));
 
-                            classBuilder.ClassDeclaration  = classBuilder.ClassDeclaration.AddMembers(methodDeclaration);
-
-
-                        });
-
-                    namespaceDeclaration = namespaceBuilder.Namespace;
+                              classBuilder.ClassDeclaration = classBuilder.ClassDeclaration.AddMembers(methodDeclaration);
+                          });
                 });
 
-            
 
 
-            
 
-            runnerBuilder.CompilationUnitSyntax = runnerBuilder.CompilationUnitSyntax.AddMembers(namespaceDeclaration);
+
+
 
             var code = runnerBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
 
