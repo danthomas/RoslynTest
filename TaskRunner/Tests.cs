@@ -225,15 +225,9 @@ namespace TaskRunner
 
             //  taskRunner = new DynamicTaskRunner.TaskRunner(serviceProvider, state);
 
-            taskRunner.Run(new RunTaskCommand
-            {
-                CommandLine = "TaskA"
-            });
+            taskRunner.Run(new RunTaskCommand("TaskA"));
 
-            taskRunner.Run(new RunTaskCommand
-            {
-                CommandLine = "TaskB"
-            });
+            taskRunner.Run(new RunTaskCommand("TaskB"));
 
             Assert.AreEqual(@"TaskA
 TaskB 123  False", console.Text);
