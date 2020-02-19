@@ -32,10 +32,10 @@ namespace TaskRunner
                                       {
                                           cob.WithParameters(
                                                   pb => pb.WithType("IServiceProvider").WithName("serviceProvider"),
-                                                  pb => pb.WithType("IState").WithName("state"));
+                                                  pb => pb.WithType("IState").WithName("state"))
+                                              .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_serviceProvider").WithRightExpression("serviceProvider"))
+                                              .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_state").WithRightExpression("state"));
                                       });
-
-
 
                               var methodDeclaration = SyntaxFactory.MethodDeclaration(
                                       SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")
