@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,19 +13,7 @@ namespace TaskRunner
             ConstructorDeclaration = SyntaxFactory.ConstructorDeclaration(SyntaxFactory.List<AttributeListSyntax>(),
                 new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
                 SyntaxFactory.Identifier("TaskRunner"),
-                SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
-                {
-                    SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                        new SyntaxTokenList(),
-                        SyntaxFactory.ParseTypeName("IServiceProvider"),
-                        SyntaxFactory.Identifier("serviceProvider"),
-                        null),
-                    SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
-                        new SyntaxTokenList(),
-                        SyntaxFactory.ParseTypeName("IState"),
-                        SyntaxFactory.Identifier("state"),
-                        null)
-                })),
+                SyntaxFactory.ParameterList(),
                 null,
                 SyntaxFactory.Block(
                     SyntaxFactory.ExpressionStatement(
@@ -44,16 +33,20 @@ namespace TaskRunner
 
         public ConstructorDeclarationSyntax ConstructorDeclaration { get; set; }
 
-        public ConstructorBuilder WithParameter(Action<ParameterBuilder> action)
+        public ConstructorBuilder WithParameters(params Action<ParameterBuilder>[] actions)
         {
-            var parameterBuilder = new ParameterBuilder();
-            action(parameterBuilder);
+            var parameters = new List<ParameterSyntax>();
+
+            foreach (var action in actions)
+            {
+                var parameterBuilder = new ParameterBuilder();
+                action(parameterBuilder);
+                parameters.Add(parameterBuilder.ParameterSyntax);
+            }
+
+            ConstructorDeclaration = ConstructorDeclaration.WithParameterList(
+                    SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(parameters)));
             return this;
         }
-    }
-
-    public class ParameterBuilder
-    {
-
     }
 }

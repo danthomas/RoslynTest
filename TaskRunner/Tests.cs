@@ -21,16 +21,18 @@ namespace TaskRunner
         {
             var runnerBuilder = new CompilationUnitBuilder()
                 .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "TaskRunner")
-                .WithNamespace("DynamicTaskRunner", namespaceBuilder =>
+                .WithNamespace("DynamicTaskRunner", nb =>
                 {
-                    namespaceBuilder.WithClass("TaskRunner", new[] { "ITaskRunner" }, classBuilder =>
+                    nb.WithClass("TaskRunner", new[] { "ITaskRunner" }, cb =>
                           {
-                              classBuilder
+                              cb
                                   .WithField("IServiceProvider", "_serviceProvider")
                                   .WithField("IState", "_state")
-                                  .WithConstructor(constructorBuilder =>
+                                  .WithConstructor(cob =>
                                       {
-                                          constructorBuilder.WithParameter(parameterBuilder => { });
+                                          cob.WithParameters(
+                                                  pb => pb.WithType("IServiceProvider").WithName("serviceProvider"),
+                                                  pb => pb.WithType("IState").WithName("state"));
                                       });
 
 
@@ -126,7 +128,7 @@ namespace TaskRunner
                                                   )
                                               )))));
 
-                              classBuilder.ClassDeclaration = classBuilder.ClassDeclaration.AddMembers(methodDeclaration);
+                              cb.ClassDeclaration = cb.ClassDeclaration.AddMembers(methodDeclaration);
                           });
                 });
 
