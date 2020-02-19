@@ -30,9 +30,9 @@ namespace TaskRunner
                                   .WithField("IState", "_state")
                                   .WithConstructor(cob =>
                                       {
-                                          cob.WithParameters(
-                                                  pb => pb.WithType("IServiceProvider").WithName("serviceProvider"),
-                                                  pb => pb.WithType("IState").WithName("state"))
+                                          cob
+                                              .WithParameter("IServiceProvider", "serviceProvider")
+                                              .WithParameter("IState", "state")
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_serviceProvider").WithRightExpression("serviceProvider"))
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_state").WithRightExpression("state"));
                                       });

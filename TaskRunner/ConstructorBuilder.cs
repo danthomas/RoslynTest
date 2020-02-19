@@ -71,6 +71,19 @@ namespace TaskRunner
             return this;
         }
 
+        public ConstructorBuilder WithParameter(string type, string name)
+        {
+            ConstructorDeclaration = ConstructorDeclaration.AddParameterListParameters(
+                SyntaxFactory.Parameter(
+                    SyntaxFactory.List<AttributeListSyntax>(),
+                    new SyntaxTokenList(),
+                    SyntaxFactory.ParseTypeName(type),
+                    SyntaxFactory.Identifier(name),
+                    null));
+
+            return this;
+        }
+
         public ConstructorBuilder WithAssignmentExpression(Action<AssignmentExpressionBuilder> action)
         {
             var assignmentExpressionBuilder = new AssignmentExpressionBuilder();
