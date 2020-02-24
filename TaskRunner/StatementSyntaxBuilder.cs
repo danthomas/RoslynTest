@@ -1,3 +1,4 @@
+using System;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -10,6 +11,14 @@ namespace TaskRunner
         public StatementSyntaxBuilder()
         {
             StatementSyntax = SyntaxFactory.Block();
+        }
+
+        public StatementSyntaxBuilder WithInvocation(Action<InvocationExpressionBuilder> action)
+        {
+            var invocationExpressionBuilder = new InvocationExpressionBuilder();
+            action(invocationExpressionBuilder);
+            StatementSyntax = invocationExpressionBuilder.StatementSyntax;
+            return this;
         }
     }
 }
