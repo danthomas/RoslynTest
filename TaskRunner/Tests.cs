@@ -35,7 +35,40 @@ namespace TaskRunner
                                               .WithParameter("IState", "state")
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_serviceProvider").WithRightExpression("serviceProvider"))
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_state").WithRightExpression("state"));
+                                      })
+                                  .WithMethod("Abcd", mb =>
+                                  {
+                                      mb.WithParameter("IRunTaskCommand", "runTaskCommand");
+                                      mb.WithIfStatement(beb => beb
+                                          .WithOperator(SyntaxKind.EqualsExpression)
+                                          .WithLeft(eb =>
+                                              {
+                                                  eb.SimpleMemberAccess("runTaskCommand", "Name");
+                                              })
+                                          .WithRight(eb =>
+                                          {
+                                              eb.StringLiteral("TaskA");
+                                          }), bsb =>
+                                      {
+                                          bsb.WithStatements(x => x.StatementSyntax = SimpleMemberAccessExpression(SyntaxFactory.InvocationExpression(
+                                              SyntaxFactory.MemberAccessExpression(
+                                                  SyntaxKind.SimpleMemberAccessExpression,
+                                                  SyntaxFactory.IdentifierName("_serviceProvider"),
+                                                  SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
+                                                      SyntaxFactory.TypeArgumentList(
+                                                          SyntaxFactory.SeparatedList(new TypeSyntax[]
+                                                          {
+                                                              SyntaxFactory.IdentifierName(
+                                                                  SyntaxFactory.Identifier("TaskA"))
+                                                          })
+                                                      ))
+                                              ),
+                                              SyntaxFactory.ArgumentList(
+                                                  SyntaxFactory.SeparatedList<ArgumentSyntax>()
+                                              )
+                                          ), "Run"));
                                       });
+                                  });
 
                               var methodDeclaration = SyntaxFactory.MethodDeclaration(
                                       SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")

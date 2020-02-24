@@ -45,5 +45,13 @@ namespace TaskRunner
             ClassDeclaration = ClassDeclaration.AddMembers(constructorBuilder.ConstructorDeclaration);
             return this;
         }
+
+        public ClassBuilder WithMethod(string name, Action<MethodBuilder> action)
+        {
+            var methodBuilder = new MethodBuilder(name);
+            action(methodBuilder);
+            ClassDeclaration = ClassDeclaration.AddMembers(methodBuilder.MethodDeclarationSyntax);
+            return this;
+        }
     }
 }
