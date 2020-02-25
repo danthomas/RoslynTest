@@ -36,7 +36,7 @@ namespace TaskRunner
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_serviceProvider").WithRightExpression("serviceProvider"))
                                               .WithAssignmentExpression(aeb => aeb.WithLeftExpression("_state").WithRightExpression("state"));
                                       })
-                                  .WithMethod("Abcd", mb =>
+                                  .WithMethod("Copy", mb =>
                                   {
                                       mb.WithParameter("IRunTaskCommand", "runTaskCommand");
                                       mb.WithIfStatement(beb => beb
@@ -50,37 +50,15 @@ namespace TaskRunner
                                               eb.StringLiteral("TaskA");
                                           }), bsb =>
                                       {
-                                          bsb.WithStatements(x => x.StatementSyntax =
-
-                                              SyntaxFactory.ExpressionStatement(
-                                                  SyntaxFactory.InvocationExpression(
-                                                      SyntaxFactory.MemberAccessExpression(
-                                                          SyntaxKind.SimpleMemberAccessExpression,
-                                                          SyntaxFactory.InvocationExpression(
-                                                              SyntaxFactory.MemberAccessExpression(
-                                                                  SyntaxKind.SimpleMemberAccessExpression,
-                                                                  SyntaxFactory.IdentifierName("_serviceProvider"),
-                                                                  SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
-                                                                      SyntaxFactory.TypeArgumentList(
-                                                                          SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                                          {
-                                                                              SyntaxFactory.IdentifierName(
-                                                                                  SyntaxFactory.Identifier("TaskA"))
-                                                                          })
-                                                                      ))
-                                                              ),
-                                                              SyntaxFactory.ArgumentList(
-                                                                  SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                              )
-                                                          ),
-                                                          SyntaxFactory.IdentifierName(
-                                                              SyntaxFactory.Identifier("Run")
-                                                          )
-                                                      )
-                                                  )
-                                              ), 
-                                              ssb => ssb.WithInvocation(ieb => ieb.WithExpression(
-                                                      esb => esb.SimpleMemberAccess(esb2 => esb2.Identifier("_serviceProvider"), "GetService", "TaskA"))));
+                                          bsb.WithStatements(
+                                              ssb => ssb.WithInvocation(
+                                                  ieb => ieb.WithExpression(
+                                                      esb => esb.SimpleMemberAccess(
+                                                          esb2 => esb2.WithInvocation(
+                                                              ieb2 => ieb2.WithExpression(
+                                                                  esb3 => esb3.SimpleMemberAccess(
+                                                                      esb4 => esb4.Identifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))
+                                              );
                                       });
                                   });
 

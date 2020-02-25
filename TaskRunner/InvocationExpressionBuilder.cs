@@ -6,14 +6,14 @@ namespace TaskRunner
 {
     public class InvocationExpressionBuilder
     {
-        public StatementSyntax StatementSyntax { get; set; }
+        public ExpressionSyntax StatementSyntax { get; set; }
 
         public InvocationExpressionBuilder WithExpression(Action<ExpressionSyntaxBuilder> esb)
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             esb(expressionSyntaxBuilder);
-            StatementSyntax = SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(expressionSyntaxBuilder.ExpressionSyntax,
-                SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>())));
+            StatementSyntax = SyntaxFactory.InvocationExpression(expressionSyntaxBuilder.ExpressionSyntax,
+                SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()));
             return this;
         }
     }

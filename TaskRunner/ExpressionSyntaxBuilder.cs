@@ -31,21 +31,34 @@ namespace TaskRunner
 
             left(expressionSyntaxBuilder);
 
-            var typeSyntaxes = genericArgs.Select(x => (TypeSyntax)SyntaxFactory.IdentifierName(
-                    SyntaxFactory.Identifier(x))).ToArray();
+            var simpleNameSyntax = genericArgs.Any()
+                ?
+                (SimpleNameSyntax)SyntaxFactory.GenericName(SyntaxFactory.Identifier(name),
+                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(genericArgs.Select(x => (TypeSyntax)SyntaxFactory.IdentifierName(
+                            SyntaxFactory.Identifier(x))).ToArray())
+                    ))
+                : SyntaxFactory.IdentifierName(
+                    SyntaxFactory.Identifier(name)
+                );
 
             ExpressionSyntax = SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 expressionSyntaxBuilder.ExpressionSyntax,
-                SyntaxFactory.GenericName(SyntaxFactory.Identifier(name),
-                    SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(typeSyntaxes)
-                    ))
+                simpleNameSyntax
             );
         }
 
         public void Identifier(string name)
         {
             ExpressionSyntax = SyntaxFactory.IdentifierName(name);
+        }
+
+        public ExpressionSyntaxBuilder WithInvocation(Action<InvocationExpressionBuilder> action)
+        {
+            var invocationExpressionBuilder = new InvocationExpressionBuilder();
+            action(invocationExpressionBuilder);
+            ExpressionSyntax = invocationExpressionBuilder.StatementSyntax;
+            return this;
         }
     }
 }

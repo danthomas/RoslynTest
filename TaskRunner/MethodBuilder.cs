@@ -30,12 +30,12 @@ namespace TaskRunner
             return this;
         }
 
-        public void WithIfStatement(Action<BinaryExpressionBuilder> condition, Action<BlockSyntaxBuilder> expression)
+        public void WithIfStatement(Action<BinaryExpressionBuilder> condition, Action<BlockSyntaxBuilder> then)
         {
             var binaryExpressionBuilder = new BinaryExpressionBuilder();
             condition(binaryExpressionBuilder);
             var blockSyntaxBuilder = new BlockSyntaxBuilder();
-            expression(blockSyntaxBuilder);
+            then(blockSyntaxBuilder);
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(
                 SyntaxFactory.IfStatement(binaryExpressionBuilder.BinaryExpression, blockSyntaxBuilder.BlockSyntax));
         }

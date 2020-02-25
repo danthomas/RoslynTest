@@ -17,7 +17,7 @@ namespace TaskRunner
         {
             var invocationExpressionBuilder = new InvocationExpressionBuilder();
             action(invocationExpressionBuilder);
-            StatementSyntax = invocationExpressionBuilder.StatementSyntax;
+            StatementSyntax = SyntaxFactory.ExpressionStatement(invocationExpressionBuilder.StatementSyntax);
             return this;
         }
     }
