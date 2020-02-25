@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using TaskRunner.Builders;
 
 namespace TaskRunner
 {
@@ -39,7 +40,7 @@ namespace TaskRunner
                                   .WithMethod("Copy", mb =>
                                   {
                                       mb.WithParameter("IRunTaskCommand", "runTaskCommand");
-                                      mb.WithIfStatement(beb => beb
+                                      mb.WithIfStatement(isb => isb.WithBinaryExpression(beb => beb
                                           .WithOperator(SyntaxKind.EqualsExpression)
                                           .WithLeft(eb =>
                                               {
@@ -48,18 +49,18 @@ namespace TaskRunner
                                           .WithRight(eb =>
                                           {
                                               eb.StringLiteral("TaskA");
-                                          }), bsb =>
-                                      {
-                                          bsb.WithStatements(
-                                              ssb => ssb.WithInvocation(
-                                                  ieb => ieb.WithExpression(
-                                                      esb => esb.SimpleMemberAccess(
-                                                          esb2 => esb2.WithInvocation(
-                                                              ieb2 => ieb2.WithExpression(
-                                                                  esb3 => esb3.SimpleMemberAccess(
-                                                                      esb4 => esb4.Identifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))
-                                              );
-                                      });
+                                          })).WithBody(bsb =>
+                                     {
+                                         bsb.WithStatements(
+                                             ssb => ssb.WithInvocation(
+                                                 ieb => ieb.WithExpression(
+                                                     esb => esb.SimpleMemberAccess(
+                                                         esb2 => esb2.WithInvocation(
+                                                             ieb2 => ieb2.WithExpression(
+                                                                 esb3 => esb3.SimpleMemberAccess(
+                                                                     esb4 => esb4.Identifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))
+                                             );
+                                     }));
                                   });
 
                               var methodDeclaration = SyntaxFactory.MethodDeclaration(

@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace TaskRunner
+namespace TaskRunner.Builders
 {
     public class ExpressionSyntaxBuilder
     {
