@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -24,6 +25,19 @@ namespace TaskRunner.Builders
 
         public ClassDeclarationSyntax ClassDeclaration { get; set; }
 
+        public ClassBuilder WithField(SyntaxKind syntaxKind, string name)
+        {
+            ClassDeclaration = ClassDeclaration.AddMembers(
+                SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(syntaxKind)),
+                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
+                        {
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(name))
+                        }))
+                ));
+
+            return this;
+        }
         public ClassBuilder WithField(string type, string name)
         {
             ClassDeclaration = ClassDeclaration.AddMembers(
@@ -38,9 +52,9 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public ClassBuilder WithConstructor(Action<ConstructorBuilder> action)
+        public ClassBuilder WithConstructor(string name, Action<ConstructorBuilder> action)
         {
-            var constructorBuilder = new ConstructorBuilder();
+            var constructorBuilder = new ConstructorBuilder(name);
             action(constructorBuilder);
             ClassDeclaration = ClassDeclaration.AddMembers(constructorBuilder.ConstructorDeclaration);
             return this;
@@ -51,6 +65,22 @@ namespace TaskRunner.Builders
             var methodBuilder = new MethodBuilder(name);
             action(methodBuilder);
             ClassDeclaration = ClassDeclaration.AddMembers(methodBuilder.MethodDeclarationSyntax);
+            return this;
+        }
+
+        public ClassBuilder WithProperty(SyntaxKind syntaxKind, string name, Action<PropertyBuilder> pb = null)
+        {
+            var propertyBuilder = new PropertyBuilder(name).WithType(syntaxKind);
+            pb?.Invoke(propertyBuilder);
+            ClassDeclaration = ClassDeclaration.AddMembers(propertyBuilder.PropertyDeclarationSyntax);
+            return this;
+        }
+
+        public ClassBuilder WithProperty(string type, string name, Action<PropertyBuilder> pb = null)
+        {
+            var propertyBuilder = new PropertyBuilder(name).WithType(type);
+            pb?.Invoke(propertyBuilder);
+            ClassDeclaration = ClassDeclaration.AddMembers(propertyBuilder.PropertyDeclarationSyntax);
             return this;
         }
     }

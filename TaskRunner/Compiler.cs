@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -38,29 +38,32 @@ namespace TaskRunner
                     Path.Combine(assemblyPath, x))));
 
             var context = AssemblyLoadContext.Default;
-            using (var ms = new MemoryStream())
+            
+            using var ms = new MemoryStream();
+
+            var result = compilation.Emit(ms);
+
+            if (!result.Success)
             {
-                var result = compilation.Emit(ms);
+                var failures = result.Diagnostics.Where(diagnostic =>
+                    diagnostic.IsWarningAsError ||
+                    diagnostic.Severity == DiagnosticSeverity.Error);
 
-                if (!result.Success)
-                {
-                    var failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
+                var stringBuilder = new StringBuilder();
 
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        System.Console.Error.WriteLine("{0}: {1}, {2}", diagnostic.Id, diagnostic.GetMessage(), diagnostic.Location);
-                    }
-                }
-                else
+
+                foreach (var diagnostic in failures)
                 {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    return context.LoadFromStream(ms);
+                    stringBuilder.AppendLine($"{diagnostic.Id}: {diagnostic.GetMessage()}, {diagnostic.Location}");
                 }
+
+                var code = compilationUnitSyntax.NormalizeWhitespace().ToString();
+
+                throw new CompilationException(stringBuilder.ToString(), code);
             }
 
-            return null;
+            ms.Seek(0, SeekOrigin.Begin);
+            return context.LoadFromStream(ms);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace TaskRunner
         [Test]
         public void TaskATest()
         {
-            var runnerBuilder = new CompilationUnitBuilder()
+            var compilationUnitBuilder = new CompilationUnitBuilder()
                 .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "TaskRunner")
                 .WithNamespace("DynamicTaskRunner", nb =>
                 {
@@ -29,7 +29,7 @@ namespace TaskRunner
                               cb
                                   .WithField("IServiceProvider", "_serviceProvider")
                                   .WithField("IState", "_state")
-                                  .WithConstructor(cob =>
+                                  .WithConstructor("TaskRunner", cob =>
                                       {
                                           cob
                                               .WithParameter("IServiceProvider", "serviceProvider")
@@ -40,27 +40,35 @@ namespace TaskRunner
                                   .WithMethod("Copy", mb =>
                                   {
                                       mb.WithParameter("IRunTaskCommand", "runTaskCommand");
-                                      mb.WithIfStatement(isb => isb.WithBinaryExpression(beb => beb
-                                          .WithOperator(SyntaxKind.EqualsExpression)
-                                          .WithLeft(eb =>
-                                              {
-                                                  eb.SimpleMemberAccess("runTaskCommand", "Name");
-                                              })
-                                          .WithRight(eb =>
+                                      mb.WithIfStatement(isb =>
+                                      {
+                                          isb.WithBinaryExpression(beb => beb
+                                              .WithOperator(SyntaxKind.EqualsExpression)
+                                              .WithLeft(eb => { eb.SimpleMemberAccess("runTaskCommand", "Name"); })
+                                              .WithRight(eb => { eb.StringLiteral("TaskA"); })).WithBody(bsb =>
                                           {
-                                              eb.StringLiteral("TaskA");
-                                          })).WithBody(bsb =>
-                                     {
-                                         bsb.WithStatements(
-                                             ssb => ssb.WithInvocation(
-                                                 ieb => ieb.WithExpression(
-                                                     esb => esb.SimpleMemberAccess(
-                                                         esb2 => esb2.WithInvocation(
-                                                             ieb2 => ieb2.WithExpression(
-                                                                 esb3 => esb3.SimpleMemberAccess(
-                                                                     esb4 => esb4.Identifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))
-                                             );
-                                     }));
+                                              bsb.WithStatements(
+                                                  ssb => ssb.WithInvocation(
+                                                      ieb => ieb.WithExpression(
+                                                          esb => esb.SimpleMemberAccess(
+                                                              esb2 => esb2.WithInvocation(
+                                                                  ieb2 => ieb2.WithExpression(
+                                                                      esb3 => esb3.SimpleMemberAccess(
+                                                                          esb4 => esb4.Identifier("_serviceProvider"),
+                                                                          "GetService", "TaskA"))), "Run")))
+                                              );
+                                          });
+
+                                          isb.WithElseClause(ecb => ecb.WithIf(isb2 => isb2.WithBinaryExpression(beb =>
+                                              beb.WithOperator(SyntaxKind.EqualsExpression)
+                                                  .WithLeft(eb => { eb.SimpleMemberAccess("runTaskCommand", "Name"); })
+                                                  .WithRight(eb => { eb.StringLiteral("TaskB"); }))));
+
+                                          isb.WithElseClause(ecb => ecb.WithIf(isb2 => isb2.WithBinaryExpression(beb =>
+                                              beb.WithOperator(SyntaxKind.EqualsExpression)
+                                                  .WithLeft(eb => { eb.SimpleMemberAccess("runTaskCommand", "Name"); })
+                                                  .WithRight(eb => { eb.StringLiteral("TaskC"); }))));
+                                      });
                                   });
 
                               var methodDeclaration = SyntaxFactory.MethodDeclaration(
@@ -164,7 +172,7 @@ namespace TaskRunner
 
 
 
-            var code = runnerBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
+            var code = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
 
             var references = new List<string>
             {
@@ -195,7 +203,7 @@ namespace TaskRunner
                 Solution = new Solution { Id = 123 }
             };
 
-            var assembly = Compiler.Compile(runnerBuilder.CompilationUnitSyntax, references);
+            var assembly = Compiler.Compile(compilationUnitBuilder.CompilationUnitSyntax, references);
 
             var type = assembly.GetType("DynamicTaskRunner.TaskRunner");
 

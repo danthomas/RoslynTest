@@ -44,11 +44,11 @@ namespace TaskRunner.Builders
 
     public class ConstructorBuilder
     {
-        public ConstructorBuilder()
+        public ConstructorBuilder(string name)
         {
             ConstructorDeclaration = SyntaxFactory.ConstructorDeclaration(SyntaxFactory.List<AttributeListSyntax>(),
                 new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
-                SyntaxFactory.Identifier("TaskRunner"),
+                SyntaxFactory.Identifier(name),
                 SyntaxFactory.ParameterList(),
                 null,
                 SyntaxFactory.Block());
@@ -68,6 +68,16 @@ namespace TaskRunner.Builders
             }
 
             ConstructorDeclaration = ConstructorDeclaration.WithParameterList(SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(parameters)));
+            
+            return this;
+        }
+
+        public ConstructorBuilder WithParameter(Action<ParameterBuilder> pb)
+        {
+            var parameterBuilder = new ParameterBuilder();
+            pb(parameterBuilder);
+            ConstructorDeclaration = ConstructorDeclaration.AddParameterListParameters(parameterBuilder.ParameterSyntax);
+            
             return this;
         }
 
@@ -78,6 +88,19 @@ namespace TaskRunner.Builders
                     SyntaxFactory.List<AttributeListSyntax>(),
                     new SyntaxTokenList(),
                     SyntaxFactory.ParseTypeName(type),
+                    SyntaxFactory.Identifier(name),
+                    null));
+
+            return this;
+        }
+
+        public ConstructorBuilder WithParameter(SyntaxKind syntaxKind, string name)
+        {
+            ConstructorDeclaration = ConstructorDeclaration.AddParameterListParameters(
+                SyntaxFactory.Parameter(
+                    SyntaxFactory.List<AttributeListSyntax>(),
+                    new SyntaxTokenList(),
+                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(syntaxKind)),
                     SyntaxFactory.Identifier(name),
                     null));
 

@@ -9,16 +9,24 @@ namespace TaskRunner.Builders
     {
         public MethodBuilder(string name)
         {
-
-            if (true)
-            {
-
-            }
-
             MethodDeclarationSyntax = SyntaxFactory.MethodDeclaration(
-                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), name)
+                SyntaxFactory.PredefinedType(
+                    SyntaxFactory.Token(SyntaxKind.VoidKeyword)), name)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddBodyStatements();
+        }
+
+        public MethodBuilder WithReturnType(SyntaxKind syntaxKind)
+        {
+            MethodDeclarationSyntax = MethodDeclarationSyntax.WithReturnType(SyntaxFactory.PredefinedType(
+                SyntaxFactory.Token(syntaxKind)));
+            return this;
+        }
+
+        public MethodBuilder WithReturnType(string name)
+        {
+            MethodDeclarationSyntax = MethodDeclarationSyntax.WithReturnType(SyntaxFactory.IdentifierName(name));
+            return this;
         }
 
         public MethodDeclarationSyntax MethodDeclarationSyntax { get; set; }
@@ -41,6 +49,14 @@ namespace TaskRunner.Builders
             var ifStatementBuilder = new IfStatementBuilder();
             isb(ifStatementBuilder);
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(ifStatementBuilder.IfStatement);
+            return this;
+        }
+
+        public MethodBuilder WithStatement(Action<StatementSyntaxBuilder> sb)
+        {
+            var statementSyntaxBuilder = new StatementSyntaxBuilder();
+            sb(statementSyntaxBuilder);
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(statementSyntaxBuilder.StatementSyntax);
             return this;
         }
     }

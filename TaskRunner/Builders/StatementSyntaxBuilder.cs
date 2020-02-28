@@ -20,5 +20,13 @@ namespace TaskRunner.Builders
             StatementSyntax = SyntaxFactory.ExpressionStatement(invocationExpressionBuilder.StatementSyntax);
             return this;
         }
+
+        public StatementSyntaxBuilder WithReturnStatement(Action<ReturnStatementBuilder> rsb)
+        {
+            var returnStatementBuilder = new ReturnStatementBuilder();
+            rsb(returnStatementBuilder);
+            StatementSyntax = returnStatementBuilder.ReturnStatement;
+            return this;
+        }
     }
 }
