@@ -12,7 +12,7 @@ namespace TaskRunner
 {
     class Compiler
     {
-        public static Assembly Compile(CompilationUnitSyntax compilationUnitSyntax, List<string> references)
+        public static Assembly Compile(CompilationUnitSyntax compilationUnitSyntax, string[] references)
         {
             var  syntaxTree = compilationUnitSyntax.SyntaxTree;
 
@@ -43,6 +43,8 @@ namespace TaskRunner
 
             var result = compilation.Emit(ms);
 
+            var code = compilationUnitSyntax.NormalizeWhitespace().ToString();
+
             if (!result.Success)
             {
                 var failures = result.Diagnostics.Where(diagnostic =>
@@ -57,7 +59,6 @@ namespace TaskRunner
                     stringBuilder.AppendLine($"{diagnostic.Id}: {diagnostic.GetMessage()}, {diagnostic.Location}");
                 }
 
-                var code = compilationUnitSyntax.NormalizeWhitespace().ToString();
 
                 throw new CompilationException(stringBuilder.ToString(), code);
             }

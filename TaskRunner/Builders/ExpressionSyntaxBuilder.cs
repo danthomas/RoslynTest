@@ -7,22 +7,38 @@ namespace TaskRunner.Builders
 {
     public class ExpressionSyntaxBuilder
     {
-        public ExpressionSyntax ExpressionSyntax { get; set; }
+        public ExpressionSyntax Expression { get; set; }
 
-        public void NumericalLiteral(int i)
+        public void WithIdentifier(string name)
         {
-            ExpressionSyntax = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(i));
+            Expression = SyntaxFactory.IdentifierName(name);
         }
 
-        public void StringLiteral(string s)
+        public ExpressionSyntaxBuilder WithObjectCreation(string name, Action<ObjectCreationBuilder> ocb = null)
         {
-            ExpressionSyntax = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(s));
+            var objectCreationBuilder = new ObjectCreationBuilder(name);
+            ocb?.Invoke(objectCreationBuilder);
+            Expression = objectCreationBuilder.Expression;
+            return this;
         }
 
-        public void SimpleMemberAccess(string left, string right)
+        public ExpressionSyntaxBuilder NumericalLiteral(int i)
         {
-            ExpressionSyntax = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+            Expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(i));
+            return this;
+        }
+
+        public ExpressionSyntaxBuilder StringLiteral(string s)
+        {
+            Expression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(s));
+            return this;
+        }
+
+        public ExpressionSyntaxBuilder SimpleMemberAccess(string left, string right)
+        {
+            Expression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                 SyntaxFactory.IdentifierName(left), (SimpleNameSyntax)SyntaxFactory.ParseName(right));
+            return this;
         }
 
         public void SimpleMemberAccess(Action<ExpressionSyntaxBuilder> left, string name, params string[] genericArgs)
@@ -41,23 +57,18 @@ namespace TaskRunner.Builders
                     SyntaxFactory.Identifier(name)
                 );
 
-            ExpressionSyntax = SyntaxFactory.MemberAccessExpression(
+            Expression = SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
-                expressionSyntaxBuilder.ExpressionSyntax,
+                expressionSyntaxBuilder.Expression,
                 simpleNameSyntax
             );
-        }
-
-        public void Identifier(string name)
-        {
-            ExpressionSyntax = SyntaxFactory.IdentifierName(name);
         }
 
         public ExpressionSyntaxBuilder WithInvocation(Action<InvocationExpressionBuilder> action)
         {
             var invocationExpressionBuilder = new InvocationExpressionBuilder();
             action(invocationExpressionBuilder);
-            ExpressionSyntax = invocationExpressionBuilder.StatementSyntax;
+            Expression = invocationExpressionBuilder.StatementSyntax;
             return this;
         }
     }

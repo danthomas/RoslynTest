@@ -31,9 +31,20 @@ namespace TaskRunner.Builders
 
         public IfStatementBuilder WithElseClause(Action<ElseClauseSyntaxBuilder> ecsb)
         {
+            IfStatementSyntax WithElse(IfStatementSyntax ifStatementSyntax,
+                ElseClauseSyntaxBuilder elseClauseSyntaxBuilder1)
+            {
+                if (ifStatementSyntax.Else != null)
+                {
+                    return WithElse(ifStatementSyntax.WithElse(ifStatementSyntax.Else), elseClauseSyntaxBuilder1);
+                }
+                return ifStatementSyntax.WithElse(elseClauseSyntaxBuilder1.ElseClauseSyntax);
+            }
+
             var elseClauseSyntaxBuilder = new ElseClauseSyntaxBuilder();
             ecsb(elseClauseSyntaxBuilder);
-            IfStatement = IfStatement.WithElse(elseClauseSyntaxBuilder.ElseClauseSyntax);
+
+            IfStatement =  WithElse(IfStatement, elseClauseSyntaxBuilder);
             return this;
         }
     }

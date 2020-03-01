@@ -15,7 +15,7 @@ namespace TaskRunner.Builders
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             esb(expressionSyntaxBuilder);
-            ReturnStatement = ReturnStatement.WithExpression(expressionSyntaxBuilder.ExpressionSyntax);
+            ReturnStatement = ReturnStatement.WithExpression(expressionSyntaxBuilder.Expression);
             return this;
         }
 

@@ -1,26 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace TaskRunner
+namespace TaskRunner.Utils
 {
-    public class TestObjectCompiler
+    public class TestAssemblyCompiler
     {
-        public (object, MethodInfo) CreateInstance(CompilationUnitSyntax compilationUnitSyntax, object[] args)
+        private Assembly _assembly;
+
+        public TestAssemblyCompiler Build(CompilationUnitSyntax compilationUnitSyntax, params string[] references)
         {
-            var references = new List<string>
+            references = references.Union(
+            new List<string>
             {
                 "mscorlib.dll",
                 "netstandard.dll",
                 "System.Private.CoreLib.dll",
                 "System.Runtime.dll"
-            };
+            }).ToArray();
 
-            var assembly = Compiler.Compile(compilationUnitSyntax, references);
+            _assembly = Compiler.Compile(compilationUnitSyntax, references);
 
-            var type = assembly.GetType("TestNamespace.TestClass");
+            return this;
+        }
+
+        public object CreateInstance(string name, params object[] args)
+        {
+            var type = _assembly.GetType(name);
 
             Activator.CreateInstance(type,
                 BindingFlags.CreateInstance |
@@ -30,9 +39,7 @@ namespace TaskRunner
 
             var instance = Activator.CreateInstance(type, args);
 
-            var methodInfo = type.GetMethod("TestMethod");
-
-            return (instance, methodInfo);
+            return instance;
         }
     }
 }

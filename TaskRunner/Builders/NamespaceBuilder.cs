@@ -15,10 +15,15 @@ namespace TaskRunner.Builders
 
         public NamespaceDeclarationSyntax Namespace { get; set; }
 
-        public NamespaceBuilder WithClass(string name, string[] bases, Action<ClassBuilder> action)
+        public NamespaceBuilder WithClass(string name, Action<ClassBuilder> action = null)
+        {
+            return WithClass(name, new string[0], action);
+        }
+
+        public NamespaceBuilder WithClass(string name, string[] bases, Action<ClassBuilder> action = null)
         {
             var classBuilder = new ClassBuilder(name, bases);
-            action(classBuilder);
+            action?.Invoke(classBuilder);
             Namespace = Namespace.AddMembers(classBuilder.ClassDeclaration);
             return this;
         }

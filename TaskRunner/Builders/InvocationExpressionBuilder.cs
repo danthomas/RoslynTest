@@ -12,7 +12,7 @@ namespace TaskRunner.Builders
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             esb(expressionSyntaxBuilder);
-            StatementSyntax = SyntaxFactory.InvocationExpression(expressionSyntaxBuilder.ExpressionSyntax,
+            StatementSyntax = SyntaxFactory.InvocationExpression(expressionSyntaxBuilder.Expression,
                 SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()));
             return this;
         }

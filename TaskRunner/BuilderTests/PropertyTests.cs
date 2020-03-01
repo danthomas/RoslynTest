@@ -2,8 +2,9 @@ using System;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using TaskRunner.Builders;
+using TaskRunner.Utils;
 
-namespace TaskRunner
+namespace TaskRunner.BuilderTests
 {
     public class PropertyTests
     {
@@ -16,9 +17,10 @@ namespace TaskRunner
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithProperty(SyntaxKind.IntKeyword, "Prop1")));
 
-            new Tester(compilationUnitBuilder.CompilationUnitSyntax)
+            new TestObjectCompiler(compilationUnitBuilder)
+                .CreateInstance()
                 .SetProperty("Prop1", 123)
-                .AssertProperty("Prop1", 123);
+                .AssertPropertyValue("Prop1", 123);
         }
 
         [Test]
@@ -30,9 +32,10 @@ namespace TaskRunner
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithProperty("DateTime", "Prop1")));
 
-            new Tester(compilationUnitBuilder.CompilationUnitSyntax)
+            new TestObjectCompiler(compilationUnitBuilder)
+                .CreateInstance()
                 .SetProperty("Prop1", new DateTime(2020, 2, 28))
-                .AssertProperty("Prop1", new DateTime(2020, 2, 28));
+                .AssertPropertyValue("Prop1", new DateTime(2020, 2, 28));
         }
     }
 }

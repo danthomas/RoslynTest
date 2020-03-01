@@ -2,8 +2,9 @@ using System;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using TaskRunner.Builders;
+using TaskRunner.Utils;
 
-namespace TaskRunner
+namespace TaskRunner.BuilderTests
 {
     public class ParameterTests
     {
@@ -22,16 +23,18 @@ namespace TaskRunner
                                 .WithName("i")
                                 .WithPredefinedType(SyntaxKind.IntKeyword))
                                 .WithAssignmentExpression(aeb => aeb
-                                    .WithLeftExpression("_i")
-                                    .WithRightExpression("i")))
+                                    .WithLeft("_i")
+                                    .WithRight("i")))
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
                             .WithStatement(sb => sb
                                 .WithReturnStatement(rsb => rsb
-                                    .WithExpression(esb => esb.Identifier("_i")
+                                    .WithExpression(esb => esb.WithIdentifier("_i")
                                         ))))));
 
-            new TestRunner(compilationUnitBuilder.CompilationUnitSyntax, Type.Missing).RunTest(123);
+            new TestObjectCompiler(compilationUnitBuilder)
+                .CreateInstance(123)
+                .AssertMethod("TestMethod", 123);
         }
 
         [Test]
@@ -48,14 +51,14 @@ namespace TaskRunner
                                         .WithDefault(esb =>
                                             esb.NumericalLiteral(123)))
                                 .WithAssignmentExpression(aeb =>
-                                    aeb.WithLeftExpression("_i")
-                                        .WithRightExpression("i")))
+                                    aeb.WithLeft("_i")
+                                        .WithRight("i")))
                             .WithMethod("TestMethod", mb =>
                                 mb.WithReturnType(SyntaxKind.IntKeyword)
                                     .WithStatement(sb =>
                                         sb.WithReturnStatement(rsb =>
                                             rsb.WithExpression(esb =>
-                                                esb.Identifier("_i")
+                                                esb.WithIdentifier("_i")
                                             )
                                         )
                                     )
@@ -63,7 +66,7 @@ namespace TaskRunner
                     )
                 );
 
-            new TestRunner(compilationUnitBuilder.CompilationUnitSyntax, Type.Missing).RunTest(123);
+            new TestRunner(compilationUnitBuilder, Type.Missing).AssertTestMethod(123);
         }
     }
 }

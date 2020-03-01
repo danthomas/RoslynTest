@@ -59,5 +59,13 @@ namespace TaskRunner.Builders
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(statementSyntaxBuilder.StatementSyntax);
             return this;
         }
+
+        public MethodBuilder WithExpression(Action<ExpressionStatementBuilder> esb)
+        {
+            var expressionStatementBuilder = new ExpressionStatementBuilder();
+            esb(expressionStatementBuilder);
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(expressionStatementBuilder.ExpressionStatementSyntax);
+            return this;
+        }
     }
 }

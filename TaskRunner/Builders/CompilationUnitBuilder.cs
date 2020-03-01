@@ -22,6 +22,16 @@ namespace TaskRunner.Builders
             return this;
         }
 
+        public CompilationUnitBuilder WithUsing<T>()
+        {
+            return WithUsings(typeof(T).Namespace);
+        }
+
+        public CompilationUnitBuilder WithUsings(params Type[] types)
+        {
+            return WithUsings(types.Select(x => x.Namespace).ToArray());
+        }
+
         public CompilationUnitBuilder WithUsings(params string[] usings)
         {
             CompilationUnitSyntax = CompilationUnitSyntax.AddUsings(usings

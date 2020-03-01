@@ -6,7 +6,7 @@ namespace TaskRunner.Builders
 {
     public class BinaryExpressionBuilder
     {
-        //SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, leftExpressionSyntaxBuilder.ExpressionSyntax, rightExpressionSyntaxBuilder.ExpressionSyntax)
+        //SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, leftExpressionSyntaxBuilder.ExpressionSyntax, rightExpressionSyntaxBuilder.Expression)
         public BinaryExpressionBuilder()
         {
             BinaryExpression = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("")), SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal("")));
@@ -24,7 +24,7 @@ namespace TaskRunner.Builders
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             action(expressionSyntaxBuilder);
-            BinaryExpression = BinaryExpression.WithLeft(expressionSyntaxBuilder.ExpressionSyntax);
+            BinaryExpression = BinaryExpression.WithLeft(expressionSyntaxBuilder.Expression);
             return this;
         }
 
@@ -32,7 +32,7 @@ namespace TaskRunner.Builders
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             action(expressionSyntaxBuilder);
-            BinaryExpression = BinaryExpression.WithRight(expressionSyntaxBuilder.ExpressionSyntax);
+            BinaryExpression = BinaryExpression.WithRight(expressionSyntaxBuilder.Expression);
             return this;
         }
     }

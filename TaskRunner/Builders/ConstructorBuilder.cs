@@ -6,42 +6,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TaskRunner.Builders
 {
-    public class AssignmentExpressionBuilder
-    {
-        public AssignmentExpressionBuilder()
-        {
-            ExpressionStatement = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(""),
-                SyntaxFactory.IdentifierName("")
-            ));
-        }
-
-        public AssignmentExpressionBuilder WithLeftExpression(string name)
-        {
-            var a = (AssignmentExpressionSyntax)ExpressionStatement.Expression;
-            ExpressionStatement = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(name),
-                a.Right
-            ));
-            return this;
-        }
-
-        public AssignmentExpressionBuilder WithRightExpression(string name)
-        {
-            var a = (AssignmentExpressionSyntax)ExpressionStatement.Expression;
-            ExpressionStatement = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                a.Left,
-                SyntaxFactory.IdentifierName(name)
-            ));
-            return this;
-        }
-
-        public ExpressionStatementSyntax ExpressionStatement { get; set; }
-    }
-
     public class ConstructorBuilder
     {
         public ConstructorBuilder(string name)
@@ -112,7 +76,7 @@ namespace TaskRunner.Builders
             var assignmentExpressionBuilder = new AssignmentExpressionBuilder();
             action(assignmentExpressionBuilder);
 
-            ConstructorDeclaration = ConstructorDeclaration.AddBodyStatements(assignmentExpressionBuilder.ExpressionStatement);
+            ConstructorDeclaration = ConstructorDeclaration.AddBodyStatements(SyntaxFactory.ExpressionStatement( assignmentExpressionBuilder.AssignmentExpression));
 
             return this;
         }

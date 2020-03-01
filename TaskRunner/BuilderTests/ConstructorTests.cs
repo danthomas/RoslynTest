@@ -1,8 +1,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using TaskRunner.Builders;
+using TaskRunner.Utils;
 
-namespace TaskRunner
+namespace TaskRunner.BuilderTests
 {
     public class ConstructorTests
     {
@@ -18,14 +19,14 @@ namespace TaskRunner
                                     pb.WithName("i")
                                         .WithPredefinedType(SyntaxKind.IntKeyword))
                                 .WithAssignmentExpression(aeb =>
-                                    aeb.WithLeftExpression("_i")
-                                        .WithRightExpression("i")))
+                                    aeb.WithLeft("_i")
+                                        .WithRight("i")))
                             .WithMethod("TestMethod", mb =>
                                 mb.WithReturnType(SyntaxKind.IntKeyword)
                                     .WithStatement(sb =>
                                         sb.WithReturnStatement(rsb =>
                                             rsb.WithExpression(esb =>
-                                                esb.Identifier("_i")
+                                                esb.WithIdentifier("_i")
                                             )
                                         )
                                     )
@@ -33,7 +34,7 @@ namespace TaskRunner
                     )
                 );
 
-            new TestRunner(compilationUnitBuilder.CompilationUnitSyntax).RunTest(123, 123);
+            new TestRunner(compilationUnitBuilder, 123).AssertTestMethod(123);
         }
     }
 }

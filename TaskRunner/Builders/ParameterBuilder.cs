@@ -39,7 +39,7 @@ namespace TaskRunner.Builders
         {
             var expressionSyntaxBuilder = new ExpressionSyntaxBuilder();
             esb(expressionSyntaxBuilder);
-            ParameterSyntax = ParameterSyntax.WithDefault(SyntaxFactory.EqualsValueClause(expressionSyntaxBuilder.ExpressionSyntax));
+            ParameterSyntax = ParameterSyntax.WithDefault(SyntaxFactory.EqualsValueClause(expressionSyntaxBuilder.Expression));
             return this;
         }
 
