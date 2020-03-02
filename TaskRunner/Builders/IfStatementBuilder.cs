@@ -29,6 +29,16 @@ namespace TaskRunner.Builders
             return this;
         }
 
+        public IfStatementBuilder WithElseClause(Action<ElseClauseSyntaxBuilder> ecsb)
+        {
+            var elseClauseSyntaxBuilder = new ElseClauseSyntaxBuilder();
+            ecsb(elseClauseSyntaxBuilder);
+
+            IfStatement = AddIfStatement(IfStatement, elseClauseSyntaxBuilder.IfStatement);
+
+            return this;
+        }
+
         public IfStatementBuilder WithElseClause(Action<BinaryExpressionBuilder> beb, Action<StatementSyntaxBuilder> ecsb)
         {
             var binaryExpressionBuilder = new BinaryExpressionBuilder();
@@ -40,28 +50,43 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        private IfStatementSyntax AddIfStatement(IfStatementSyntax ifStatementSyntax, BinaryExpressionSyntax binaryExpression, StatementSyntax statement)
+        private IfStatementSyntax AddIfStatement(IfStatementSyntax parent, BinaryExpressionSyntax binaryExpression, StatementSyntax statement)
         {
-            return ifStatementSyntax.WithElse(SyntaxFactory.ElseClause(ifStatementSyntax.Else == null
-                ? SyntaxFactory.IfStatement(binaryExpression, SyntaxFactory.Block( statement))
-                : AddIfStatement((IfStatementSyntax)ifStatementSyntax.Else.Statement, binaryExpression, statement)));
+            return parent.WithElse(SyntaxFactory.ElseClause(parent.Else == null
+                ? SyntaxFactory.IfStatement(binaryExpression, SyntaxFactory.Block(statement))
+                : AddIfStatement((IfStatementSyntax)parent.Else.Statement, binaryExpression, statement)));
+        }
+
+        private IfStatementSyntax AddIfStatement(IfStatementSyntax parent, IfStatementSyntax child)
+        {
+            return parent.WithElse(SyntaxFactory.ElseClause(parent.Else == null
+                ? child
+                : AddIfStatement((IfStatementSyntax)parent.Else.Statement, child)));
         }
     }
 
     public class ElseClauseSyntaxBuilder
     {
+        public IfStatementSyntax IfStatement { get; set; }
 
-        public ElseClauseSyntax ElseClauseSyntax { get; set; }
         public ElseClauseSyntaxBuilder()
         {
-            ElseClauseSyntax = SyntaxFactory.ElseClause(SyntaxFactory.Block());
+            IfStatement = SyntaxFactory.IfStatement(SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression), SyntaxFactory.Block());
         }
 
-        public ElseClauseSyntaxBuilder WithIf(Action<IfStatementBuilder> isb)
+        public ElseClauseSyntaxBuilder WithBinaryExpression(Action<BinaryExpressionBuilder> beb)
         {
-            var ifStatementBuilder = new IfStatementBuilder();
-            isb(ifStatementBuilder);
-            ElseClauseSyntax = SyntaxFactory.ElseClause(ifStatementBuilder.IfStatement);
+            var binaryExpressionBuilder = new BinaryExpressionBuilder();
+            beb(binaryExpressionBuilder);
+            IfStatement = IfStatement.WithCondition(binaryExpressionBuilder.BinaryExpression);
+            return this;
+        }
+
+        public ElseClauseSyntaxBuilder WithBody(Action<BlockSyntaxBuilder> bsb)
+        {
+            var blockSyntaxBuilder = new BlockSyntaxBuilder();
+            bsb(blockSyntaxBuilder);
+            IfStatement = IfStatement.WithStatement(blockSyntaxBuilder.BlockSyntax);
             return this;
         }
     }

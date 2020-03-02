@@ -38,12 +38,12 @@ namespace TaskRunner.BuilderTests
                                             .WithReturnStatement(rsb => rsb
                                                 .WithExpression(esb2 => esb2.StringLiteral("Two"))));
 
-                                    isb.WithElseClause(beb => beb
+                                    isb.WithElseClause(ecsb => ecsb.WithBinaryExpression(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
-                                        .WithRight(esb => esb.NumericalLiteral(3)), 
-                                        ssb => ssb
+                                        .WithRight(esb => esb.NumericalLiteral(3)))
+                                        .WithBody(bsb => bsb.WithStatements(ssb => ssb
                                             .WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("Three"))));
+                                                .WithExpression(esb2 => esb2.StringLiteral("Three"))))));
 
                                     isb.WithElseClause(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
