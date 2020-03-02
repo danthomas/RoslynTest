@@ -31,6 +31,19 @@ namespace TaskRunner.Builders
 
         public MethodDeclarationSyntax MethodDeclarationSyntax { get; set; }
 
+        public MethodBuilder WithParameter(SyntaxKind syntaxKind, string name)
+        {
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddParameterListParameters(
+                SyntaxFactory.Parameter(
+                    SyntaxFactory.List<AttributeListSyntax>(),
+                    new SyntaxTokenList(),
+                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(syntaxKind)),
+                    SyntaxFactory.Identifier(name),
+                    null));
+
+            return this;
+        }
+
         public MethodBuilder WithParameter(string type, string name)
         {
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddParameterListParameters(

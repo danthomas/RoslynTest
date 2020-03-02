@@ -32,9 +32,4 @@ namespace TaskRunner.Builders
             }).ToArray());
         }
     }
-
-    public class ArgumentSyntaxBuilder
-    {
-        public ArgumentSyntax Argument { get; set; }
-    }
 }

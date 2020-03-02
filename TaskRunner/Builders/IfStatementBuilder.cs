@@ -29,7 +29,7 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public IfStatementBuilder WithElseClause(Action<ElseClauseSyntaxBuilder> ecsb)
+        public IfStatementBuilder WithElseIfClause(Action<ElseClauseSyntaxBuilder> ecsb)
         {
             var elseClauseSyntaxBuilder = new ElseClauseSyntaxBuilder();
             ecsb(elseClauseSyntaxBuilder);
@@ -39,7 +39,7 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public IfStatementBuilder WithElseClause(Action<BinaryExpressionBuilder> beb, Action<StatementSyntaxBuilder> ecsb)
+        public IfStatementBuilder WithElseIfClause(Action<BinaryExpressionBuilder> beb, Action<StatementSyntaxBuilder> ecsb)
         {
             var binaryExpressionBuilder = new BinaryExpressionBuilder();
             beb(binaryExpressionBuilder);

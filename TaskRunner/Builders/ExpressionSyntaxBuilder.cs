@@ -68,7 +68,13 @@ namespace TaskRunner.Builders
         {
             var invocationExpressionBuilder = new InvocationExpressionBuilder();
             action(invocationExpressionBuilder);
-            Expression = invocationExpressionBuilder.StatementSyntax;
+            Expression = invocationExpressionBuilder.InvocationExpression;
+            return this;
+        }
+
+        public ExpressionSyntaxBuilder WithStringLiteralExpression(string value)
+        {
+            Expression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(value));
             return this;
         }
     }

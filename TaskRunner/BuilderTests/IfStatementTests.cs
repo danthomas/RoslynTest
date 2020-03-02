@@ -31,21 +31,21 @@ namespace TaskRunner.BuilderTests
                                                 .WithReturnStatement(rsb => rsb
                                                     .WithExpression(esb2 => esb2.StringLiteral("One")))));
 
-                                    isb.WithElseClause(beb => beb
+                                    isb.WithElseIfClause(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
                                         .WithRight(esb => esb.NumericalLiteral(2)), 
                                         ssb => ssb
                                             .WithReturnStatement(rsb => rsb
                                                 .WithExpression(esb2 => esb2.StringLiteral("Two"))));
 
-                                    isb.WithElseClause(ecsb => ecsb.WithBinaryExpression(beb => beb
+                                    isb.WithElseIfClause(ecsb => ecsb.WithBinaryExpression(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
                                         .WithRight(esb => esb.NumericalLiteral(3)))
                                         .WithBody(bsb => bsb.WithStatements(ssb => ssb
                                             .WithReturnStatement(rsb => rsb
                                                 .WithExpression(esb2 => esb2.StringLiteral("Three"))))));
 
-                                    isb.WithElseClause(beb => beb
+                                    isb.WithElseIfClause(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
                                         .WithRight(esb => esb.NumericalLiteral(4)), 
                                         ssb => ssb
@@ -53,9 +53,7 @@ namespace TaskRunner.BuilderTests
                                                 .WithExpression(esb2 => esb2.StringLiteral("Four"))));
 
                                 })
-                                .WithStatement(sb => sb
-                                    .StatementSyntax = SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(
-                                    SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(""))));
+                                .WithStatement(sb => sb.WithReturnStatement(rsb => rsb.WithExpression(esb => esb.WithStringLiteralExpression(""))));
                         })));
 
             new TestRunner(compilationUnitBuilder).AssertTests(

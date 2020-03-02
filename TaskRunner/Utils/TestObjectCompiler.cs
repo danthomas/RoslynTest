@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using TaskRunner.Builders;
@@ -10,9 +12,9 @@ namespace TaskRunner.Utils
         private object _instance;
         private readonly CompilationUnitSyntax _compilationUnitSyntax;
 
-        public TestObjectCompiler(CompilationUnitBuilder compilationUnitBuilder, params string[]  references)
+        public TestObjectCompiler(CompilationUnitBuilder compilationUnitBuilder, params Type[] references)
         {
-            _references = references;
+            _references = references.Select(x => x.Assembly.Location).ToArray();
             _compilationUnitSyntax = compilationUnitBuilder.CompilationUnitSyntax;
         }
 

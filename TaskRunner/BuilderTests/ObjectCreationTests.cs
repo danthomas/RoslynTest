@@ -21,7 +21,7 @@ namespace TaskRunner.BuilderTests
                                 .WithRight(esb2 => esb2
                                     .WithObjectCreation("Thing"))))));
 
-            var thing = new TestObjectCompiler(compilationUnitBuilder, typeof(Thing).Assembly.Location)
+            var thing = new TestObjectCompiler(compilationUnitBuilder, typeof(Thing))
                 .CreateInstance()
                 .GetPropertyValue("Prop");
 

@@ -17,7 +17,7 @@ namespace TaskRunner.Builders
         {
             var invocationExpressionBuilder = new InvocationExpressionBuilder();
             action(invocationExpressionBuilder);
-            StatementSyntax = SyntaxFactory.ExpressionStatement(invocationExpressionBuilder.StatementSyntax);
+            StatementSyntax = SyntaxFactory.ExpressionStatement(invocationExpressionBuilder.InvocationExpression);
             return this;
         }
 
@@ -26,6 +26,14 @@ namespace TaskRunner.Builders
             var returnStatementBuilder = new ReturnStatementBuilder();
             rsb(returnStatementBuilder);
             StatementSyntax = returnStatementBuilder.ReturnStatement;
+            return this;
+        }
+
+        public StatementSyntaxBuilder WithAssignment(Action<AssignmentExpressionBuilder> aeb)
+        {
+            var assignmentExpressionBuilder = new AssignmentExpressionBuilder();
+            aeb(assignmentExpressionBuilder);
+            StatementSyntax = SyntaxFactory.ExpressionStatement(assignmentExpressionBuilder.AssignmentExpression);
             return this;
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -48,16 +47,16 @@ namespace TaskRunner
                                               .WithRight(eb => eb.StringLiteral("TaskA")))
                                               .WithBody(bsb => bsb
                                                   .WithStatements(ssb => ssb
-                                                      .WithInvocation(ieb => ieb
+                                                      .WithInvocation(ieb2 => ieb2
                                                           .WithExpression(esb => esb
-                                                              .SimpleMemberAccess(esb2 => esb2
-                                                                  .WithInvocation(ieb2 => ieb2
-                                                                      .WithExpression(esb3 => esb3
-                                                                          .SimpleMemberAccess(esb4 => esb4
-                                                                                  .WithIdentifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))));
+                                                              .WithInvocation(ieb => ieb
+                                                                  .WithExpression(esb => esb
+                                                                      .WithIdentifier("_serviceProvider"))
+                                                                  .WithGenericIdentifier("GetService", "TaskA")))
+                                                          .WithIdentifier("Run"))));
 
                                           /*
-                                          isb.WithElseClause(beb => beb
+                                          isb.WithElseIfClause(beb => beb
                                               .WithOperator(SyntaxKind.EqualsExpression)
                                               .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
                                               .WithRight(eb => eb.StringLiteral("TaskB")), 
@@ -68,8 +67,8 @@ namespace TaskRunner
                                                               .WithExpression(esb3 => esb3
                                                                   .SimpleMemberAccess(esb4 => esb4
                                                                       .WithIdentifier("_serviceProvider"), "GetService", "TaskB"))), "Run"))));
-
-                                          isb.WithElseClause(beb => beb
+                                          
+                                          isb.WithElseIfClause(beb => beb
                                               .WithOperator(SyntaxKind.EqualsExpression)
                                               .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
                                               .WithRight(eb => eb.StringLiteral("TaskC")), 
