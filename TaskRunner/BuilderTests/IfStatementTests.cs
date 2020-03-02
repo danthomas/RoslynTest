@@ -15,42 +15,55 @@ namespace TaskRunner.BuilderTests
                 .WithNamespace("TestNamespace", nb =>
                     nb.WithClass("TestClass", new string[0], cb =>
                         cb.WithMethod("TestMethod", mb =>
+                        {
                             mb.WithReturnType(SyntaxKind.StringKeyword)
-                                .WithParameter("int", "i")
-                                .WithIfStatement(isb => isb
-                                    .WithBinaryExpression(beb => beb
-                                        .WithLeft(esb => esb.WithIdentifier("i"))
-                                        .WithRight(esb => esb.NumericalLiteral(1)))
-                                    .WithBody(bsb => bsb
-                                        .WithStatements(x => x
-                                            .WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("One")))))
-                                    .WithElseClause(ecb => ecb.WithIf(isb2 => isb2
+                                .WithParameter("int", "i");
+
+
+                            mb.WithIfStatement(isb =>
+                                {
+                                    isb
                                         .WithBinaryExpression(beb => beb
                                             .WithLeft(esb => esb.WithIdentifier("i"))
-                                            .WithRight(esb => esb.NumericalLiteral(2)))
+                                            .WithRight(esb => esb.NumericalLiteral(1)))
                                         .WithBody(bsb => bsb
                                             .WithStatements(x => x
                                                 .WithReturnStatement(rsb => rsb
-                                                    .WithExpression(esb2 => esb2.StringLiteral("Two")))))))
-                                    .WithElseClause(isb2 => isb2
-                                        .WithIf(z => z
-                                            .WithBinaryExpression(beb => beb
-                                                .WithLeft(esb => esb.WithIdentifier("i"))
-                                                .WithRight(esb => esb.NumericalLiteral(3)))
-                                            .WithBody(bsb => bsb
-                                                .WithStatements(x => x.WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("Three"))))))))
+                                                    .WithExpression(esb2 => esb2.StringLiteral("One")))));
+
+                                    isb.WithElseClause(beb => beb
+                                        .WithLeft(esb => esb.WithIdentifier("i"))
+                                        .WithRight(esb => esb.NumericalLiteral(2)), 
+                                        ssb => ssb
+                                            .WithReturnStatement(rsb => rsb
+                                                .WithExpression(esb2 => esb2.StringLiteral("Two"))));
+
+                                    isb.WithElseClause(beb => beb
+                                        .WithLeft(esb => esb.WithIdentifier("i"))
+                                        .WithRight(esb => esb.NumericalLiteral(3)), 
+                                        ssb => ssb
+                                            .WithReturnStatement(rsb => rsb
+                                                .WithExpression(esb2 => esb2.StringLiteral("Three"))));
+
+                                    isb.WithElseClause(beb => beb
+                                        .WithLeft(esb => esb.WithIdentifier("i"))
+                                        .WithRight(esb => esb.NumericalLiteral(4)), 
+                                        ssb => ssb
+                                            .WithReturnStatement(rsb => rsb
+                                                .WithExpression(esb2 => esb2.StringLiteral("Four"))));
+
+                                })
                                 .WithStatement(sb => sb
                                     .StatementSyntax = SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(
-                                        SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(""))))
-                        )));
+                                    SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(""))));
+                        })));
 
             new TestRunner(compilationUnitBuilder).AssertTests(
                 new Test { Args = new object[] { 1 }, Expected = "One" },
                 new Test { Args = new object[] { 2 }, Expected = "Two" },
                 new Test { Args = new object[] { 3 }, Expected = "Three" },
-                new Test { Args = new object[] { 4 }, Expected = "" }
+                new Test { Args = new object[] { 4 }, Expected = "Four" },
+                new Test { Args = new object[] { 5 }, Expected = "" }
                 );
         }
     }

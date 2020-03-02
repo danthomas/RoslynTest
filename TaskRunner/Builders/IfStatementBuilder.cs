@@ -29,23 +29,22 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public IfStatementBuilder WithElseClause(Action<ElseClauseSyntaxBuilder> ecsb)
+        public IfStatementBuilder WithElseClause(Action<BinaryExpressionBuilder> beb, Action<StatementSyntaxBuilder> ecsb)
         {
-            IfStatementSyntax WithElse(IfStatementSyntax ifStatementSyntax,
-                ElseClauseSyntaxBuilder elseClauseSyntaxBuilder1)
-            {
-                if (ifStatementSyntax.Else != null)
-                {
-                    return WithElse(ifStatementSyntax.WithElse(ifStatementSyntax.Else), elseClauseSyntaxBuilder1);
-                }
-                return ifStatementSyntax.WithElse(elseClauseSyntaxBuilder1.ElseClauseSyntax);
-            }
+            var binaryExpressionBuilder = new BinaryExpressionBuilder();
+            beb(binaryExpressionBuilder);
+            var statementSyntaxBuilder = new StatementSyntaxBuilder();
+            ecsb(statementSyntaxBuilder);
 
-            var elseClauseSyntaxBuilder = new ElseClauseSyntaxBuilder();
-            ecsb(elseClauseSyntaxBuilder);
-
-            IfStatement =  WithElse(IfStatement, elseClauseSyntaxBuilder);
+            IfStatement = AddIfStatement(IfStatement, binaryExpressionBuilder.BinaryExpression, statementSyntaxBuilder.StatementSyntax);
             return this;
+        }
+
+        private IfStatementSyntax AddIfStatement(IfStatementSyntax ifStatementSyntax, BinaryExpressionSyntax binaryExpression, StatementSyntax statement)
+        {
+            return ifStatementSyntax.WithElse(SyntaxFactory.ElseClause(ifStatementSyntax.Else == null
+                ? SyntaxFactory.IfStatement(binaryExpression, SyntaxFactory.Block( statement))
+                : AddIfStatement((IfStatementSyntax)ifStatementSyntax.Else.Statement, binaryExpression, statement)));
         }
     }
 

@@ -56,33 +56,32 @@ namespace TaskRunner
                                                                           .SimpleMemberAccess(esb4 => esb4
                                                                                   .WithIdentifier("_serviceProvider"), "GetService", "TaskA"))), "Run")))));
 
-                                          isb.WithElseClause(ecb => ecb.WithIf(isb2 => isb2.WithBinaryExpression(beb =>
-                                              beb.WithOperator(SyntaxKind.EqualsExpression)
-                                                  .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                                  .WithRight(eb => eb.StringLiteral("TaskB")))
-                                              .WithBody(bsb => bsb
-                                                  .WithStatements(ssb => ssb
-                                                      .WithInvocation(ieb => ieb
-                                                          .WithExpression(esb => esb
-                                                              .SimpleMemberAccess(esb2 => esb2
-                                                                  .WithInvocation(ieb2 => ieb2
-                                                                      .WithExpression(esb3 => esb3
-                                                                          .SimpleMemberAccess(esb4 => esb4
-                                                                              .WithIdentifier("_serviceProvider"), "GetService", "TaskB"))), "Run")))))));
+                                          /*
+                                          isb.WithElseClause(beb => beb
+                                              .WithOperator(SyntaxKind.EqualsExpression)
+                                              .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
+                                              .WithRight(eb => eb.StringLiteral("TaskB")), 
+                                              ssb => ssb.WithInvocation(ieb => ieb
+                                                  .WithExpression(esb => esb
+                                                      .SimpleMemberAccess(esb2 => esb2
+                                                          .WithInvocation(ieb2 => ieb2
+                                                              .WithExpression(esb3 => esb3
+                                                                  .SimpleMemberAccess(esb4 => esb4
+                                                                      .WithIdentifier("_serviceProvider"), "GetService", "TaskB"))), "Run"))));
 
-                                          isb.WithElseClause(ecb => ecb.WithIf(isb2 => isb2.WithBinaryExpression(beb =>
-                                              beb.WithOperator(SyntaxKind.EqualsExpression)
-                                                  .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                                  .WithRight(eb => eb.StringLiteral("TaskC")))
-                                              .WithBody(bsb => bsb
-                                                  .WithStatements(ssb => ssb
-                                                      .WithInvocation(ieb => ieb
-                                                          .WithExpression(esb => esb
-                                                              .SimpleMemberAccess(esb2 => esb2
-                                                                  .WithInvocation(ieb2 => ieb2
-                                                                      .WithExpression(esb3 => esb3
-                                                                          .SimpleMemberAccess(esb4 => esb4
-                                                                              .WithIdentifier("_serviceProvider"), "GetService", "TaskC"))), "Run")))))));
+                                          isb.WithElseClause(beb => beb
+                                              .WithOperator(SyntaxKind.EqualsExpression)
+                                              .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
+                                              .WithRight(eb => eb.StringLiteral("TaskC")), 
+                                              ssb => ssb.WithInvocation(ieb => ieb
+                                                  .WithExpression(esb => esb
+                                                      .SimpleMemberAccess(esb2 => esb2
+                                                          .WithInvocation(ieb2 => ieb2
+                                                              .WithExpression(esb3 => esb3
+                                                                  .SimpleMemberAccess(esb4 => esb4
+                                                                      .WithIdentifier("_serviceProvider"), "GetService", "TaskC"))), "Run"))));
+                                                                      */
+
                                       });
                                   });
 
