@@ -25,7 +25,7 @@ namespace Tests.CommandLineInterface
             };
 
             var taskRunner = new TaskRunnerBuilder()
-                .Build(serviceProvider, state, typeof(TaskA).Assembly.Location, "Tests.CommandLineInterface");
+                .Build(serviceProvider, state, typeof(TaskA).Assembly);
 
             taskRunner.Run(new RunTaskCommand("TaskA"));
 

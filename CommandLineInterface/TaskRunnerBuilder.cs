@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -7,10 +9,18 @@ namespace CommandLineInterface
 {
     public class TaskRunnerBuilder
     {
-        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, string reference, string @namespace)
+        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, Assembly assembly)
         {
+            var taskTypes = assembly.GetTypes()
+                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask)))
+                .ToArray();
+
+            var usings = new[] {"System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface", "Tests"}
+                .Union(taskTypes.Select(x => x.Namespace).Distinct())
+                .ToArray();
+
             var compilationUnitBuilder = new CompilationUnitBuilder()
-                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface", "Tests", @namespace)
+                .WithUsings(usings)
                 .WithNamespace("DynamicTaskRunner", nb =>
                 {
                     nb.WithClass("TaskRunner", new[] { "ITaskRunner" }, cb =>
@@ -108,12 +118,11 @@ namespace CommandLineInterface
                 "C:\\Users\\dan.thomas\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.0\\lib\\netstandard2.0\\Microsoft.Extensions.DependencyInjection.Abstractions.dll",
                 typeof(IServiceProvider).Assembly.Location,
                 typeof(ITaskRunner).Assembly.Location,
-                reference
+                @assembly.Location
             };
 
-            var assembly = new Compiler().Compile(compilationUnitBuilder.CompilationUnitSyntax, references);
-
-            var type = assembly.GetType("DynamicTaskRunner.TaskRunner");
+            var type = new Compiler().Compile(compilationUnitBuilder.CompilationUnitSyntax, references)
+                .GetType("DynamicTaskRunner.TaskRunner");
 
             return (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
         }
