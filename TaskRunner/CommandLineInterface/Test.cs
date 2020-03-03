@@ -1,4 +1,4 @@
-namespace Tests
+namespace Tests.CommandLineInterface
 {
     public class Test
     {

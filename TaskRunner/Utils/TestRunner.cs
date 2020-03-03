@@ -1,5 +1,6 @@
 using AssemblyBuilder;
 using NUnit.Framework;
+using Tests.CommandLineInterface;
 
 namespace Tests.Utils
 {

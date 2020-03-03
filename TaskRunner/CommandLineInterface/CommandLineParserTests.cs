@@ -1,16 +1,15 @@
 using System.Text;
-using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 using Parsing;
 
-namespace Tests
+namespace Tests.CommandLineInterface
 {
     public class CommandLineParserTests
     {
         [Test]
         public void TaskNameOnly()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName");
 
             var actual = NodeToString(node);
 
@@ -21,7 +20,7 @@ namespace Tests
         [Test]
         public void DefaultValue()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName value");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName value");
 
             var actual = NodeToString(node);
 
@@ -34,7 +33,7 @@ namespace Tests
         [Test]
         public void DefaultStringValue()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName \"value\"");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName \"value\"");
 
             var actual = NodeToString(node);
 
@@ -47,7 +46,7 @@ namespace Tests
         [Test]
         public void DefaultValues()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName [value1 \"value2\" value3]");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName [value1 \"value2\" value3]");
 
             var actual = NodeToString(node);
 
@@ -63,7 +62,7 @@ namespace Tests
         [Test]
         public void Switch()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -switch");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -switch");
 
             var actual = NodeToString(node);
 
@@ -76,7 +75,7 @@ namespace Tests
         [Test]
         public void SwitchValue()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s value");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s value");
 
             var actual = NodeToString(node);
 
@@ -90,7 +89,7 @@ namespace Tests
         [Test]
         public void SwitchStringValue()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s \"value\"");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s \"value\"");
 
             var actual = NodeToString(node);
 
@@ -104,7 +103,7 @@ namespace Tests
         [Test]
         public void SwitchValues()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s [value1 \"value2\" value3]");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s [value1 \"value2\" value3]");
 
             var actual = NodeToString(node);
 
@@ -121,7 +120,7 @@ namespace Tests
         [Test]
         public void KeyValuePair()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s key:value");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s key:value");
 
             var actual = NodeToString(node);
 
@@ -137,7 +136,7 @@ namespace Tests
         [Test]
         public void KeyValuePairs()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s [key1:value2 key2:value2 key3:value3]");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s [key1:value2 key2:value2 key3:value3]");
 
             var actual = NodeToString(node);
 
@@ -160,7 +159,7 @@ namespace Tests
         [Test]
         public void Switches()
         {
-            var node = new CommandLineInterface.CommandLineParser().Parse("TaskName -s1 -s2 value6 -s3 \"value7\" -s4 [value8 \"value9\" value10]");
+            var node = new global::CommandLineInterface.CommandLineParser().Parse("TaskName -s1 -s2 value6 -s3 \"value7\" -s4 [value8 \"value9\" value10]");
 
             var actual = NodeToString(node);
 

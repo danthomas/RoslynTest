@@ -1,6 +1,6 @@
 using CommandLineInterface;
 
-namespace Tests
+namespace Tests.CommandLineInterface
 {
     public class TaskB : ITask<TaskB.Args>
     {

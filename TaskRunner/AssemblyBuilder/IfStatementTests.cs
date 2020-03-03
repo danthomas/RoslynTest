@@ -2,6 +2,7 @@ using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using Tests.CommandLineInterface;
 using Tests.Utils;
 
 namespace Tests.AssemblyBuilder

@@ -1,7 +1,7 @@
 using System;
 using CommandLineInterface;
 
-namespace Tests
+namespace Tests.CommandLineInterface
 {
     class Console : IConsole
     {

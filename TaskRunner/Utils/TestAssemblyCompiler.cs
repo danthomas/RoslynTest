@@ -23,7 +23,7 @@ namespace Tests.Utils
                 "System.Runtime.dll"
             }).ToArray();
 
-            _assembly = Compiler.Compile(compilationUnitSyntax, references);
+            _assembly = new Compiler().Compile(compilationUnitSyntax, references);
 
             return this;
         }

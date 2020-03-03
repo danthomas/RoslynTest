@@ -11,7 +11,7 @@ namespace AssemblyBuilder
 {
     public class Compiler
     {
-        public static Assembly Compile(CompilationUnitSyntax compilationUnitSyntax, string[] references)
+        public Assembly Compile(CompilationUnitSyntax compilationUnitSyntax, string[] references)
         {
             var syntaxTree = compilationUnitSyntax.SyntaxTree;
 
