@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace TaskRunner
+namespace Tests
 {
     public class RunTaskCommandTests
     {

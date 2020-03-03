@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace TaskRunner
+namespace Tests
 {
     public class TaskRunner : ITaskRunner
     {

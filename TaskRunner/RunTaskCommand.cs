@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TaskRunner.Parsing;
+using CommandLineInterface;
+using Parsing;
 
-namespace TaskRunner
+namespace Tests
 {
     class RunTaskCommand : IRunTaskCommand
     {

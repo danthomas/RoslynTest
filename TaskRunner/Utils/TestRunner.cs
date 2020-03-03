@@ -1,7 +1,7 @@
+using AssemblyBuilder;
 using NUnit.Framework;
-using TaskRunner.Builders;
 
-namespace TaskRunner.Utils
+namespace Tests.Utils
 {
     public class TestRunner
     {

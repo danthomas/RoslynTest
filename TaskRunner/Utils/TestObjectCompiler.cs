@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+using AssemblyBuilder;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using TaskRunner.Builders;
 
-namespace TaskRunner.Utils
+namespace Tests.Utils
 {
     public class TestObjectCompiler
     {

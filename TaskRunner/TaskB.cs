@@ -1,4 +1,4 @@
-namespace TaskRunner
+namespace Tests
 {
     public class TaskB : ITask<TaskB.Args>
     {

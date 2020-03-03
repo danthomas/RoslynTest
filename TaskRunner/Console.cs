@@ -1,6 +1,6 @@
 using System;
 
-namespace TaskRunner
+namespace Tests
 {
     class Console : IConsole
     {

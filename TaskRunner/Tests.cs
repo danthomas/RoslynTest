@@ -1,11 +1,11 @@
 using System;
+using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using TaskRunner.Builders;
 
-namespace TaskRunner
+namespace Tests
 {
     public class Tests
     {
@@ -13,7 +13,7 @@ namespace TaskRunner
         public void TaskATest()
         {
             var compilationUnitBuilder = new CompilationUnitBuilder()
-                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "TaskRunner")
+                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "Tests")
                 .WithNamespace("DynamicTaskRunner", nb =>
                 {
                     nb.WithClass("TaskRunner", new[] { "ITaskRunner" }, cb =>

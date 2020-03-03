@@ -1,4 +1,4 @@
-namespace TaskRunner
+namespace Tests
 {
     class SwitchDef
     {

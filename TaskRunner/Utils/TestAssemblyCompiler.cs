@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
-namespace TaskRunner.Utils
+namespace Tests.Utils
 {
     public class IfTEsting
     {

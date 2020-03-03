@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace TaskRunner
+namespace Tests
 {
     public class ArgDefs<T>
     {
