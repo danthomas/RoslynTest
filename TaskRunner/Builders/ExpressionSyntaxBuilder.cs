@@ -14,6 +14,13 @@ namespace TaskRunner.Builders
             Expression = SyntaxFactory.IdentifierName(name);
         }
 
+        public ExpressionSyntaxBuilder WithObjectCreation(params string[] names)
+        {
+            var objectCreationBuilder = new ObjectCreationBuilder(names);
+            Expression = objectCreationBuilder.Expression;
+            return this;
+        }
+
         public ExpressionSyntaxBuilder WithObjectCreation(string name, Action<ObjectCreationBuilder> ocb = null)
         {
             var objectCreationBuilder = new ObjectCreationBuilder(name);

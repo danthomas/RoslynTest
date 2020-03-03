@@ -16,7 +16,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.StringKeyword)
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb
                                         .StringLiteral("Fnord")))))));

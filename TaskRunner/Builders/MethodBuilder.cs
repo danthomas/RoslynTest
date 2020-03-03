@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -65,11 +66,16 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public MethodBuilder WithStatement(Action<StatementSyntaxBuilder> sb)
+        public MethodBuilder WithStatements(params Action<StatementSyntaxBuilder>[] sbs)
         {
-            var statementSyntaxBuilder = new StatementSyntaxBuilder();
-            sb(statementSyntaxBuilder);
-            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(statementSyntaxBuilder.StatementSyntax);
+            var statementSyntaxes = sbs.Select(x =>
+            {
+                var statementSyntaxBuilder = new StatementSyntaxBuilder();
+                x(statementSyntaxBuilder);
+                return statementSyntaxBuilder.StatementSyntax;
+            }).ToArray();
+            
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(statementSyntaxes);
             return this;
         }
 

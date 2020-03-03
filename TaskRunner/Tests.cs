@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using TaskRunner.Builders;
@@ -11,11 +9,6 @@ namespace TaskRunner
 {
     public class Tests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public void TaskATest()
         {
@@ -36,7 +29,7 @@ namespace TaskRunner
                                               .WithAssignmentExpression(aeb => aeb.WithLeft("_serviceProvider").WithRight("serviceProvider"))
                                               .WithAssignmentExpression(aeb => aeb.WithLeft("_state").WithRight("state"));
                                       })
-                                  .WithMethod("Copy", mb =>
+                                  .WithMethod("Run", mb =>
                                   {
                                       mb.WithParameter("IRunTaskCommand", "runTaskCommand");
                                       mb.WithIfStatement(isb =>
@@ -47,143 +40,63 @@ namespace TaskRunner
                                               .WithRight(eb => eb.StringLiteral("TaskA")))
                                               .WithBody(bsb => bsb
                                                   .WithStatements(ssb => ssb
-                                                      .WithInvocation(ieb2 => ieb2
-                                                          .WithExpression(esb => esb
-                                                              .WithInvocation(ieb => ieb
-                                                                  .WithExpression(esb => esb
-                                                                      .WithIdentifier("_serviceProvider"))
-                                                                  .WithGenericIdentifier("GetService", "TaskA")))
-                                                          .WithIdentifier("Run"))));
+                                                          .WithInvocation(ieb2 => ieb2
+                                                              .WithExpression(esb => esb
+                                                                  .WithInvocation(ieb => ieb
+                                                                      .WithExpression(esb => esb
+                                                                          .WithIdentifier("_serviceProvider"))
+                                                                      .WithGenericIdentifier("GetService", "TaskA")))
+                                                              .WithIdentifier("Run"))));
+                                          /**/
 
-                                          /*
                                           isb.WithElseIfClause(beb => beb
                                               .WithOperator(SyntaxKind.EqualsExpression)
                                               .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                              .WithRight(eb => eb.StringLiteral("TaskB")), 
-                                              ssb => ssb.WithInvocation(ieb => ieb
-                                                  .WithExpression(esb => esb
-                                                      .SimpleMemberAccess(esb2 => esb2
-                                                          .WithInvocation(ieb2 => ieb2
-                                                              .WithExpression(esb3 => esb3
-                                                                  .SimpleMemberAccess(esb4 => esb4
-                                                                      .WithIdentifier("_serviceProvider"), "GetService", "TaskB"))), "Run"))));
-                                          
-                                          isb.WithElseIfClause(beb => beb
-                                              .WithOperator(SyntaxKind.EqualsExpression)
-                                              .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                              .WithRight(eb => eb.StringLiteral("TaskC")), 
-                                              ssb => ssb.WithInvocation(ieb => ieb
-                                                  .WithExpression(esb => esb
-                                                      .SimpleMemberAccess(esb2 => esb2
-                                                          .WithInvocation(ieb2 => ieb2
-                                                              .WithExpression(esb3 => esb3
-                                                                  .SimpleMemberAccess(esb4 => esb4
-                                                                      .WithIdentifier("_serviceProvider"), "GetService", "TaskC"))), "Run"))));
-                                                                      */
+                                              .WithRight(eb => eb.StringLiteral("TaskB")), ssb => ssb
+                                                  .WithLocalDeclaration(lsdb => lsdb
+                                                      .WithType("var")
+                                                      .WithName("args")
+                                                      .WithInitialiser(esb => esb.WithObjectCreation("TaskB", "Args"))), ssb => ssb
+                                                  .WithAssignment(aeb => aeb
+                                                      .WithLeft("args", "BoolProp")
+                                                      .WithRight(esb => esb
+                                                          .WithInvocation(ieb => ieb
+                                                              .WithExpression(esb => esb
+                                                                  .WithIdentifier("runTaskCommand"))
+                                                              .WithGenericIdentifier("GetValue", "bool")
+                                                              .WithArguments(asb => asb.WithExpression(esb => esb.StringLiteral("BoolProp")))))
+                                                  ), ssb => ssb
+                                                  .WithAssignment(aeb => aeb
+                                                      .WithLeft("args", "StringProp")
+                                                      .WithRight(esb => esb
+                                                          .WithInvocation(ieb => ieb
+                                                              .WithExpression(esb => esb
+                                                                  .WithIdentifier("runTaskCommand"))
+                                                              .WithGenericIdentifier("GetValue", "string")
+                                                              .WithArguments(asb => asb.WithExpression(esb => esb.StringLiteral("StringProp")))))
+                                                  ),
+                                              ssb => ssb
+                                                  .WithInvocation(ieb2 => ieb2
+                                                      .WithExpression(esb => esb
+                                                          .WithInvocation(ieb => ieb
+                                                              .WithExpression(esb => esb
+                                                                  .WithIdentifier("_serviceProvider"))
+                                                              .WithGenericIdentifier("GetService", "TaskB")))
+                                                      .WithIdentifier("Run")
+                                                      .WithArguments(asb => asb
+                                                              .WithExpression(esb => esb
+                                                                  .WithIdentifier("args")),
+                                                          asb => asb
+                                                              .WithExpression(esb => esb
+                                                                  .WithInvocation(ieb => ieb
+                                                                      .WithExpression(esb => esb
+                                                                          .WithIdentifier("_state"))
+                                                                      .WithGenericIdentifier("GetState", "Solution"))))));
 
                                       });
                                   });
-
-                              var methodDeclaration = SyntaxFactory.MethodDeclaration(
-                                      SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)), "Run")
-                                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                          .AddParameterListParameters(SyntaxFactory.Parameter(new SyntaxList<AttributeListSyntax>(),
-                                      new SyntaxTokenList(),
-                                      SyntaxFactory.ParseTypeName("IRunTaskCommand"),
-                                      SyntaxFactory.Identifier("runTaskCommand"),
-                                      null))
-                                  .WithBody(SyntaxFactory.Block(
-                                      SyntaxFactory.IfStatement(EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskA")),
-                                          SyntaxFactory.Block(
-                                              SimpleMemberAccessExpression(SyntaxFactory.InvocationExpression(
-                                                  SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                      SyntaxFactory.IdentifierName("_serviceProvider"),
-                                                      SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
-                                                          SyntaxFactory.TypeArgumentList(
-                                                              SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                              {
-                                                SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("TaskA"))
-                                                              })
-                                                          ))
-                                                  ),
-                                                  SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                  )
-                                              ), "Run")),
-                                          SyntaxFactory.ElseClause(
-                                              SyntaxFactory.IfStatement(
-                                              EqualsExpression(SimpleMemberAccessExpression(SyntaxFactory.Identifier("runTaskCommand"), "Name"), LiteralExpression("TaskB")),
-                                              SyntaxFactory.Block(
-                                                  SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(
-                                                      SyntaxFactory.ParseTypeName("var"),
-                                                      SyntaxFactory.SeparatedList(new[]
-                                                      {
-                                        SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("args"),
-                                            null,
-                                            SyntaxFactory.EqualsValueClause(ObjectCreationExpression(new []{ "TaskB", "Args"})))
-                                                      })
-                                                      )),
-                                                  AssignArgsPropValue("BoolProp", SyntaxKind.BoolKeyword),
-                                                  AssignArgsPropValue("StringProp", SyntaxKind.StringKeyword),
-                                                  SyntaxFactory.ExpressionStatement(
-                                                      SyntaxFactory.InvocationExpression(
-                                                          SyntaxFactory.MemberAccessExpression(
-                                                              SyntaxKind.SimpleMemberAccessExpression,
-                                                              SyntaxFactory.InvocationExpression(
-                                                                  SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                                      SyntaxFactory.IdentifierName("_serviceProvider"),
-                                                                      SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetService"),
-                                                                          SyntaxFactory.TypeArgumentList(
-                                                                              SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                                              {
-                                                                SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("TaskB"))
-                                                                              })
-                                                                          ))
-                                                                  ),
-                                                                  SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                                  )
-                                                              ),
-                                                              SyntaxFactory.IdentifierName(
-                                                                  SyntaxFactory.Identifier("Run")
-                                                              )
-                                                          ),
-                                                          SyntaxFactory.ArgumentList(
-                                                              SyntaxFactory.SeparatedList(new[] {
-                                                SyntaxFactory.Argument(
-                                                    SyntaxFactory.IdentifierName(
-                                                        SyntaxFactory.Identifier("args")
-                                                    )
-                                                ),
-                                                SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
-                                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                                                        SyntaxFactory.IdentifierName("_state"),
-                                                        SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetState"),
-                                                            SyntaxFactory.TypeArgumentList(
-                                                                SyntaxFactory.SeparatedList(new TypeSyntax[]
-                                                                {
-                                                                    SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("Solution"))
-                                                                })
-                                                            ))
-                                                    ),
-                                                    SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>()
-                                                    )
-                                                ))
-                                                              }
-                                                              )
-                                                          )
-                                                      )
-                                                  )
-                                                  )
-                                              )))));
-
-                              cb.ClassDeclaration = cb.ClassDeclaration.AddMembers(methodDeclaration);
                           });
                 });
-
-
-
-
-
-
 
             var code = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
 
@@ -222,101 +135,12 @@ namespace TaskRunner
 
             var taskRunner = (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
 
-            //  taskRunner = new DynamicTaskRunner.TaskRunner(serviceProvider, state);
-
             taskRunner.Run(new RunTaskCommand("TaskA"));
 
             taskRunner.Run(new RunTaskCommand("TaskB -BoolProp true -StringProp ABCD"));
 
             Assert.AreEqual(@"TaskA
 TaskB 123 ABCD True", console.Text);
-        }
-
-        private static ExpressionStatementSyntax AssignArgsPropValue(string propName, SyntaxKind propType)
-        {
-            return SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                        SyntaxFactory.IdentifierName("args"),
-                        SyntaxFactory.IdentifierName(propName)
-                    ),
-                    SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName("runTaskCommand"),
-                            SyntaxFactory.GenericName(SyntaxFactory.Identifier("GetValue"), SyntaxFactory.TypeArgumentList(
-                                SyntaxFactory.SeparatedList(
-                                    new[]
-                                    {
-                                        (TypeSyntax)SyntaxFactory.PredefinedType(SyntaxFactory.Token(propType))
-                                    }
-                                )
-                            ))
-                        ),
-                        SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(
-                                new[] { SyntaxFactory.Argument(LiteralExpression(propName)) }
-                            )
-                        )
-                    )
-                )
-            );
-        }
-
-        private static MemberAccessExpressionSyntax SimpleMemberAccessExpression(SyntaxToken runTaskCommandIdentifier, string name)
-        {
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-                SyntaxFactory.IdentifierName(runTaskCommandIdentifier), (SimpleNameSyntax)SyntaxFactory.ParseName(name));
-        }
-
-        private static ObjectCreationExpressionSyntax ObjectCreationExpression(string name, params string[] args)
-        {
-            return ObjectCreationExpression(new[] { name }, args);
-        }
-
-        private static ObjectCreationExpressionSyntax ObjectCreationExpression(string[] names, params string[] args)
-        {
-            var identifierNameSyntax = names.Length == 1
-                ? (TypeSyntax)SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(names[0]))
-                : SyntaxFactory.QualifiedName(SyntaxFactory.ParseName(names[0]), (SimpleNameSyntax)SyntaxFactory.ParseName(names[1]));
-
-            var separatedSyntaxList = SyntaxFactory.SeparatedList(args
-                .Select(s => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(s)))));
-
-            return SyntaxFactory.ObjectCreationExpression(identifierNameSyntax,
-                SyntaxFactory.ArgumentList(separatedSyntaxList), null);
-        }
-
-        private static ExpressionStatementSyntax SimpleMemberAccessExpression(ExpressionSyntax @object, string name, params string[] args)
-        {
-            return SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        @object,
-                        SyntaxFactory.IdentifierName(
-                            SyntaxFactory.Identifier(name)
-                            )
-                        ),
-                    SyntaxFactory.ArgumentList(
-                        SyntaxFactory.SeparatedList(args.Select(s => SyntaxFactory.Argument(
-                            SyntaxFactory.IdentifierName(
-                                SyntaxFactory.Identifier(s)
-                                )
-                            )
-                        )
-                    )
-                    )
-                    )
-                );
-        }
-
-        private static BinaryExpressionSyntax EqualsExpression(ExpressionSyntax left, ExpressionSyntax right)
-        {
-            return SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, left, right);
-        }
-
-        private static LiteralExpressionSyntax LiteralExpression(string text)
-        {
-            return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(text));
         }
     }
 }

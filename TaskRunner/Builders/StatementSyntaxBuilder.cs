@@ -36,5 +36,12 @@ namespace TaskRunner.Builders
             StatementSyntax = SyntaxFactory.ExpressionStatement(assignmentExpressionBuilder.AssignmentExpression);
             return this;
         }
+
+        public void WithLocalDeclaration(Action<LocalDeclarationSyntaxBuilder> ldsb)
+        {
+            var localDeclarationSyntaxBuilder = new LocalDeclarationSyntaxBuilder();
+            ldsb(localDeclarationSyntaxBuilder);
+            StatementSyntax = localDeclarationSyntaxBuilder.LocalDeclaration;
+        }
     }
 }

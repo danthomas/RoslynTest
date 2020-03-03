@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using TaskRunner.Builders;
@@ -53,8 +54,10 @@ namespace TaskRunner.BuilderTests
                                                 .WithExpression(esb2 => esb2.StringLiteral("Four"))));
 
                                 })
-                                .WithStatement(sb => sb.WithReturnStatement(rsb => rsb.WithExpression(esb => esb.WithStringLiteralExpression(""))));
+                                .WithStatements(sb => sb.WithReturnStatement(rsb => rsb.WithExpression(esb => esb.WithStringLiteralExpression(""))));
                         })));
+
+            var actual = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToFullString();
 
             new TestRunner(compilationUnitBuilder).AssertTests(
                 new Test { Args = new object[] { 1 }, Expected = "One" },

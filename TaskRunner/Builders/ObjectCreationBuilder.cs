@@ -9,27 +9,33 @@ namespace TaskRunner.Builders
     {
         public ExpressionSyntax Expression { get; set; }
 
-        public ObjectCreationBuilder(string name)
+        public ObjectCreationBuilder(params string[] names)
         {
-            Expression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.IdentifierName(name))
+            var typeSyntax = new TypeSyntaxBuilder().Build(names);
+
+            Expression = SyntaxFactory.ObjectCreationExpression(typeSyntax)
                 .WithArgumentList(
                 SyntaxFactory.ArgumentList());
         }
 
-        public void WithIdentifier(string name)
+        public ObjectCreationBuilder WithIdentifier(params string[] names)
         {
-            Expression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.IdentifierName(name)).WithArgumentList(
+            var typeSyntax = new TypeSyntaxBuilder().Build(names);
+
+            Expression = SyntaxFactory.ObjectCreationExpression(typeSyntax).WithArgumentList(
                 SyntaxFactory.ArgumentList());
+            return this;
         }
 
-        public void WithArguments(params Action<ArgumentSyntaxBuilder>[] asbs)
+        public ObjectCreationBuilder WithArguments(params Action<ArgumentSyntaxBuilder>[] asbs)
         {
-            Expression = ((ObjectCreationExpressionSyntax) Expression).AddArgumentListArguments(asbs.Select(x =>
+            Expression = ((ObjectCreationExpressionSyntax)Expression).AddArgumentListArguments(asbs.Select(x =>
             {
                 var argumentSyntaxBuilder = new ArgumentSyntaxBuilder();
                 x(argumentSyntaxBuilder);
                 return argumentSyntaxBuilder.Argument;
             }).ToArray());
+            return this;
         }
     }
 }

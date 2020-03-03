@@ -7,12 +7,17 @@ namespace TaskRunner.Builders
     {
         public SyntaxNodeOrToken Build(string name)
         {
-            if (name == "string")
+            switch (name)
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
+                case "string":
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
+                case "bool":
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
+                case "int":
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
+                default:
+                    return SyntaxFactory.IdentifierName(name);
             }
-
-            return SyntaxFactory.IdentifierName(name);
         }
     }
 }

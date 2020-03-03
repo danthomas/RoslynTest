@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,7 +15,8 @@ namespace TaskRunner.Builders
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ThisExpression(),
-                    SyntaxFactory.IdentifierName("")));
+                    SyntaxFactory.IdentifierName("")))
+                .WithArgumentList(SyntaxFactory.ArgumentList());
         }
 
         public InvocationExpressionBuilder WithThisExpression()

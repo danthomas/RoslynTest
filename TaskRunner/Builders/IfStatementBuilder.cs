@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -39,22 +40,27 @@ namespace TaskRunner.Builders
             return this;
         }
 
-        public IfStatementBuilder WithElseIfClause(Action<BinaryExpressionBuilder> beb, Action<StatementSyntaxBuilder> ecsb)
+        public IfStatementBuilder WithElseIfClause(Action<BinaryExpressionBuilder> beb, params Action<StatementSyntaxBuilder>[] ssbs)
         {
             var binaryExpressionBuilder = new BinaryExpressionBuilder();
             beb(binaryExpressionBuilder);
-            var statementSyntaxBuilder = new StatementSyntaxBuilder();
-            ecsb(statementSyntaxBuilder);
 
-            IfStatement = AddIfStatement(IfStatement, binaryExpressionBuilder.BinaryExpression, statementSyntaxBuilder.StatementSyntax);
+            var statementSyntaxes = ssbs.Select(x =>
+            {
+                var statementSyntaxBuilder = new StatementSyntaxBuilder();
+                x(statementSyntaxBuilder);
+                return statementSyntaxBuilder.StatementSyntax;
+            }).ToArray();
+            
+            IfStatement = AddIfStatement(IfStatement, binaryExpressionBuilder.BinaryExpression, statementSyntaxes);
             return this;
         }
 
-        private IfStatementSyntax AddIfStatement(IfStatementSyntax parent, BinaryExpressionSyntax binaryExpression, StatementSyntax statement)
+        private IfStatementSyntax AddIfStatement(IfStatementSyntax parent, BinaryExpressionSyntax binaryExpression, StatementSyntax[] statements)
         {
             return parent.WithElse(SyntaxFactory.ElseClause(parent.Else == null
-                ? SyntaxFactory.IfStatement(binaryExpression, SyntaxFactory.Block(statement))
-                : AddIfStatement((IfStatementSyntax)parent.Else.Statement, binaryExpression, statement)));
+                ? SyntaxFactory.IfStatement(binaryExpression, SyntaxFactory.Block(statements))
+                : AddIfStatement((IfStatementSyntax)parent.Else.Statement, binaryExpression, statements)));
         }
 
         private IfStatementSyntax AddIfStatement(IfStatementSyntax parent, IfStatementSyntax child)

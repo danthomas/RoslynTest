@@ -27,7 +27,7 @@ namespace TaskRunner.BuilderTests
                                     .WithRight("i")))
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb.WithIdentifier("_i")
                                         ))))));
@@ -55,7 +55,7 @@ namespace TaskRunner.BuilderTests
                                         .WithRight("i")))
                             .WithMethod("TestMethod", mb =>
                                 mb.WithReturnType(SyntaxKind.IntKeyword)
-                                    .WithStatement(sb =>
+                                    .WithStatements(sb =>
                                         sb.WithReturnStatement(rsb =>
                                             rsb.WithExpression(esb =>
                                                 esb.WithIdentifier("_i")

@@ -15,15 +15,19 @@ namespace TaskRunner.Builders
             );
         }
 
-        public AssignmentExpressionBuilder WithLeft(string name)
+        public AssignmentExpressionBuilder WithLeft(params string[] names)
         {
-            AssignmentExpression = AssignmentExpression.WithLeft(SyntaxFactory.IdentifierName(name));
+            var typeSyntax = new TypeSyntaxBuilder().Build(names);
+
+            AssignmentExpression = AssignmentExpression.WithLeft(typeSyntax);
             return this;
         }
 
-        public AssignmentExpressionBuilder WithRight(string name)
+        public AssignmentExpressionBuilder WithRight(params string[] names)
         {
-            AssignmentExpression = AssignmentExpression.WithRight(SyntaxFactory.IdentifierName(name));
+            var typeSyntax = new TypeSyntaxBuilder().Build(names);
+
+            AssignmentExpression = AssignmentExpression.WithRight(typeSyntax);
             return this;
         }
 

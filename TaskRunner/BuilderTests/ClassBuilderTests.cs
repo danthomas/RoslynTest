@@ -38,7 +38,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb => esb
                                     .NumericalLiteral(123))))))
                 );
@@ -57,7 +57,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.StringKeyword)
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb => esb
                                     .StringLiteral("123"))))))
                 );

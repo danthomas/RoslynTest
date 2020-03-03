@@ -17,17 +17,17 @@ namespace TaskRunner.BuilderTests
                 .WithNamespace("TestNamespace", nb => nb
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithField(SyntaxKind.IntKeyword, "_i")
-                        .WithMethod("SetValue", mb => mb.WithStatement(sb => sb
+                        .WithMethod("SetValue", mb => mb.WithStatements(sb => sb
                             .WithAssignment(x => x
                                 .WithLeft("_i")
                                 .WithRight(esb => esb   
                                     .NumericalLiteral(123)))))
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
-                            .WithStatement(sb => sb.WithInvocation(ieb => ieb
+                            .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithThisExpression()
                                 .WithIdentifier("SetValue")))
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb.WithIdentifier("_i")
                                     ))))));
@@ -50,18 +50,18 @@ namespace TaskRunner.BuilderTests
                         .WithMethod("SetValue", mb => mb
                             .WithParameter(SyntaxKind.IntKeyword, "i")
                             .WithParameter(SyntaxKind.IntKeyword, "j")
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                             .WithAssignment(x => x
                                 .WithLeft("_i")
                                 .WithRight(esb => esb .WithIdentifier("i")))))
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
-                            .WithStatement(sb => sb.WithInvocation(ieb => ieb
+                            .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithThisExpression()
                                 .WithIdentifier("SetValue")
                                 .WithArguments(asb => asb.WithExpression(esb => esb.NumericalLiteral(123)),
                                     asb => asb.WithExpression(esb => esb.NumericalLiteral(1)))))
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb.WithIdentifier("_i")
                                     ))))));
@@ -83,7 +83,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithParameter("Thing", "thing")
-                            .WithStatement(sb => sb.WithInvocation(ieb => ieb
+                            .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithExpression(esb => esb.WithIdentifier("thing"))
                                 .WithIdentifier("SetIntProp")
                                 .WithArguments(asb => asb.WithExpression(esb => esb.NumericalLiteral(123))))))));
@@ -108,7 +108,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithParameter("Thing", "thing")
-                            .WithStatement(sb => sb.WithInvocation(ieb => ieb
+                            .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithExpression(esb => esb.WithIdentifier("thing"))
                                 .WithGenericIdentifier("SetStringProp", "string"))))));
 
@@ -132,7 +132,7 @@ namespace TaskRunner.BuilderTests
                     .WithClass("TestClass", new string[0], cb => cb
                         .WithMethod("TestMethod", mb => mb
                             .WithParameter("Thing", "thing")
-                            .WithStatement(sb => sb.WithInvocation(ieb => ieb
+                            .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithExpression(esb => esb.WithIdentifier("thing"))
                                 .WithGenericIdentifier("SetStringProp", "string")
                                 .WithArguments(asb => asb.WithExpression(esb => esb.StringLiteral("Abcd"))))))));
@@ -174,7 +174,7 @@ namespace TestNamespace
                             .WithParameter("Thing", "thing")
                             .WithParameter(SyntaxKind.StringKeyword, "s")
                             .WithReturnType(SyntaxKind.StringKeyword)
-                            .WithStatement(sb => sb
+                            .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb3 => esb3
                                     .WithInvocation(ieb2 => ieb2
                                         .WithExpression(esb => esb
