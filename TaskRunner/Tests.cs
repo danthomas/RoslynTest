@@ -1,5 +1,6 @@
 using System;
 using AssemblyBuilder;
+using CommandLineInterface;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace Tests
         public void TaskATest()
         {
             var compilationUnitBuilder = new CompilationUnitBuilder()
-                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "Tests")
+                .WithUsings("System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface", "Tests")
                 .WithNamespace("DynamicTaskRunner", nb =>
                 {
                     nb.WithClass("TaskRunner", new[] { "ITaskRunner" }, cb =>
@@ -110,7 +111,8 @@ namespace Tests
                 "C:\\Users\\dan.thomas\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\3.1.0\\lib\\netcoreapp3.1\\Microsoft.Extensions.DependencyInjection.dll",
                 "C:\\Users\\dan.thomas\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.0\\lib\\netstandard2.0\\Microsoft.Extensions.DependencyInjection.Abstractions.dll",
                 typeof(IServiceProvider).Assembly.Location,
-                typeof(ITaskRunner).Assembly.Location
+                typeof(ITaskRunner).Assembly.Location,
+                typeof(TaskA).Assembly.Location
             };
 
 

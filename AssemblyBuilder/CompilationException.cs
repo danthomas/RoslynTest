@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tests
+namespace AssemblyBuilder
 {
     public class CompilationException : Exception
     {

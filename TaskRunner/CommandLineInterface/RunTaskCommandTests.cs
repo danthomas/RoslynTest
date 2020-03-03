@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CommandLineInterface;
 using NUnit.Framework;
 
 namespace Tests

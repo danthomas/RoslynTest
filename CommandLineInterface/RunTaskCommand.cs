@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommandLineInterface;
 using Parsing;
 
-namespace Tests
+namespace CommandLineInterface
 {
-    class RunTaskCommand : IRunTaskCommand
+    public class RunTaskCommand : IRunTaskCommand
     {
         private readonly List<Argument> _arguments;
 
@@ -59,7 +58,7 @@ namespace Tests
             var multipleValuesNode = node.Nodes.SingleOrDefault(x => x.TokenType == "MultipleValues");
 
             return multipleValuesNode?.Nodes
-                       .Where(x => x.TokenType == "Value"  || x.TokenType == "StringValue")
+                       .Where(x => x.TokenType == "Value" || x.TokenType == "StringValue")
                        .Select(x => x.Text)
                        .ToList() ?? new List<string>();
         }

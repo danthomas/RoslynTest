@@ -1,4 +1,4 @@
-namespace Tests
+namespace CommandLineInterface
 {
     public interface IRunTaskCommand
     {

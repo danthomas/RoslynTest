@@ -1,3 +1,5 @@
+using CommandLineInterface;
+
 namespace Tests
 {
     public class TaskB : ITask<TaskB.Args>
@@ -20,7 +22,7 @@ namespace Tests
             _console.WriteLine($"TaskB {solution.Id} {args.StringProp} {args.BoolProp}");
         }
 
-        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()
+        public ArgDefs<TaskB.Args> ArgDefs => new ArgDefs<Args>()
             .DefaultRequired(x => x.StringProp, "sp")
             .Optional(x => x.BoolProp, "sp");
     }

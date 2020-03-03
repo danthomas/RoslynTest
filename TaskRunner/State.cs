@@ -1,3 +1,5 @@
+using CommandLineInterface;
+
 namespace Tests
 {
     class State : IState

@@ -7,13 +7,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Tests
+namespace AssemblyBuilder
 {
-    class Compiler
+    public class Compiler
     {
         public static Assembly Compile(CompilationUnitSyntax compilationUnitSyntax, string[] references)
         {
-            var  syntaxTree = compilationUnitSyntax.SyntaxTree;
+            var syntaxTree = compilationUnitSyntax.SyntaxTree;
 
             //creating options that tell the compiler to output a console application
             var options = new CSharpCompilationOptions(
@@ -33,11 +33,11 @@ namespace Tests
 
             compilation = compilation.AddReferences(references
                 .Select(x => MetadataReference.CreateFromFile(Path.IsPathRooted(x)
-                    ? x : 
+                    ? x :
                     Path.Combine(assemblyPath, x))));
 
             var context = AssemblyLoadContext.Default;
-            
+
             using var ms = new MemoryStream();
 
             var result = compilation.Emit(ms);
