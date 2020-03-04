@@ -25,6 +25,7 @@ namespace CommandLineInterface
             return new TaskDef
             {
                 Name = type.Name,
+                Namespace = type.Namespace,
                 ArgsType = parameter == null ? "" : $"{type.FullName}.{parameter.ParameterType.Name}",
                 ParamDefs = runMethodInfo.GetParameters().Select(x => BuildParamDef(x, type)).ToList(),
                 ArgsPropDefs = GetArgPropDefs(parameter)
@@ -39,8 +40,10 @@ namespace CommandLineInterface
                 .Select(x => new ArgPropDef
                 {
                     Name = x.Name,
+                    Namespace = x.PropertyType.Namespace,
                     Type = x.PropertyType.Name
-                }).ToList();
+                }).ToList()
+                   ?? new List<ArgPropDef>();
         }
 
         private static ParamDef BuildParamDef(ParameterInfo x, Type type)
@@ -58,6 +61,7 @@ namespace CommandLineInterface
             return new ParamDef
             {
                 Name = x.Name,
+                Namespace = x.ParameterType.Namespace,
                 Type = typeNames,
                 IsArgs = isArgs
             };

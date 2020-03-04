@@ -5,6 +5,18 @@ using Tests.Utils;
 
 namespace Tests.AssemblyBuilder
 {
+    public class TypeSyntaxBuilderTests
+    {
+        [TestCase("A")]
+        [TestCase("A.B")]
+        [TestCase("A.B.C")]
+        [TestCase("A.B.C.D")]
+        public void Test(string fullName)
+        {
+            Assert.AreEqual(fullName, new TypeSyntaxBuilder().Build(fullName.Split(".")).ToString());
+        }
+    }
+
     public class AssignmentExpressionTests
     {
         [Test]

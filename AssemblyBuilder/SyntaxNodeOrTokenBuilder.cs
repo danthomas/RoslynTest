@@ -11,13 +11,16 @@ namespace AssemblyBuilder
             switch (name)
             {
                 case "string":
+                case "String":
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
                 case "bool":
+                case "Boolean":
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
                 case "int":
+                case "Int32":
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
                 default:
-                    return SyntaxFactory.IdentifierName(name);
+                    return new TypeSyntaxBuilder().Build(name.Split("."));
             }
         }
     }

@@ -4,5 +4,6 @@ namespace CommandLineInterface
     {
         public string Name { get; set; }
         public string Type { get; set; }
+        public string Namespace { get; set; }
     }
 }

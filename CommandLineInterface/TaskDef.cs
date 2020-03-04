@@ -8,5 +8,6 @@ namespace CommandLineInterface
         public string ArgsType { get; set; }
         public List<ArgPropDef> ArgsPropDefs { get; set; }
         public List<ParamDef> ParamDefs { get; set; }
+        public string Namespace { get; set; }
     }
 }
