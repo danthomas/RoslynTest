@@ -2,7 +2,7 @@ using System.Text.Json;
 using CommandLineInterface;
 using NUnit.Framework;
 
-namespace Tests.CommandLineInterface
+namespace Tests.CommandLineInterfaceTests
 {
     public class TaskDefBuilderTests
     {
@@ -21,7 +21,7 @@ namespace Tests.CommandLineInterface
   'ArgsType': '',
   'ArgsPropDefs': [],
   'ParamDefs': [],
-  'Namespace': 'Tests.CommandLineInterface'
+  'Namespace': 'Tests.CommandLineInterfaceTests'
 }", actual);
         }
 
@@ -37,7 +37,7 @@ namespace Tests.CommandLineInterface
 
             Assert.AreEqual(@"{
   'Name': 'TaskB',
-  'ArgsType': 'Tests.CommandLineInterface.TaskB.Args',
+  'ArgsType': 'Tests.CommandLineInterfaceTests.TaskB.Args',
   'ArgsPropDefs': [
     {
       'Name': 'BoolProp',
@@ -53,18 +53,18 @@ namespace Tests.CommandLineInterface
   'ParamDefs': [
     {
       'Name': 'args',
-      'Type': 'Tests.CommandLineInterface.TaskB.Args',
+      'Type': 'Tests.CommandLineInterfaceTests.TaskB.Args',
       'IsArgs': true,
-      'Namespace': 'Tests.CommandLineInterface'
+      'Namespace': 'Tests.CommandLineInterfaceTests'
     },
     {
       'Name': 'solution',
-      'Type': 'Tests.CommandLineInterface.Solution',
+      'Type': 'Tests.CommandLineInterfaceTests.Solution',
       'IsArgs': false,
-      'Namespace': 'Tests.CommandLineInterface'
+      'Namespace': 'Tests.CommandLineInterfaceTests'
     }
   ],
-  'Namespace': 'Tests.CommandLineInterface'
+  'Namespace': 'Tests.CommandLineInterfaceTests'
 }", actual);
         }
 
@@ -83,7 +83,7 @@ namespace Tests.CommandLineInterface
   'ArgsType': '',
   'ArgsPropDefs': [],
   'ParamDefs': [],
-  'Namespace': 'Tests.CommandLineInterface'
+  'Namespace': 'Tests.CommandLineInterfaceTests'
 }", actual);
         }
     }

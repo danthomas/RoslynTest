@@ -2,10 +2,10 @@ using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
-using Tests.CommandLineInterface;
+using Tests.CommandLineInterfaceTests;
 using Tests.Utils;
 
-namespace Tests.AssemblyBuilder
+namespace Tests.AssemblyBuilderTests
 {
     public class IfStatementTests
     {

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Tests.Utils;
 
-namespace Tests.AssemblyBuilder
+namespace Tests.AssemblyBuilderTests
 {
     public class PropertyTests
     {

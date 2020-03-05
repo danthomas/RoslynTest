@@ -2,7 +2,7 @@ using AssemblyBuilder;
 using NUnit.Framework;
 using Tests.Utils;
 
-namespace Tests.AssemblyBuilder
+namespace Tests.AssemblyBuilderTests
 {
     public class ObjectCreationTests
     {

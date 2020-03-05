@@ -1,4 +1,4 @@
-namespace Tests.AssemblyBuilder
+namespace Tests.AssemblyBuilderTests
 {
     public class Thing
     {

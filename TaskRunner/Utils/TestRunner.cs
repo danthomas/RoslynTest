@@ -1,6 +1,6 @@
 using AssemblyBuilder;
 using NUnit.Framework;
-using Tests.CommandLineInterface;
+using Tests.CommandLineInterfaceTests;
 
 namespace Tests.Utils
 {

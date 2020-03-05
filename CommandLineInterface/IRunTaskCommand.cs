@@ -4,6 +4,6 @@ namespace CommandLineInterface
     {
         string Name { get; }
 
-        T GetValue<T>(string name);
+        T GetValue<T>(string @switch, string name, bool isDefault);
     }
 }

@@ -104,7 +104,7 @@ namespace CommandLineInterface
                         .WithLocalDeclaration(lsdb => lsdb
                             .WithType("var")
                             .WithName("args")
-                            .WithInitialiser(esb => esb.WithObjectCreation("TaskB", "Args"))));
+                            .WithInitialiser(esb => esb.WithObjectCreation(taskDef.ArgsType.Split('.')))));
 
                 foreach (var argPropDef in taskDef.ArgsPropDefs)
                 {

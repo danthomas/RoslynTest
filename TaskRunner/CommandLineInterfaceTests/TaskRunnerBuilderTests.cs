@@ -3,7 +3,7 @@ using CommandLineInterface;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Tests.CommandLineInterface
+namespace Tests.CommandLineInterfaceTests
 {
     public class TaskRunnerBuilderTests
     {

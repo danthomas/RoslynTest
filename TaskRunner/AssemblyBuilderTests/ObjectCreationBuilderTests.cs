@@ -2,7 +2,7 @@ using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
-namespace Tests.AssemblyBuilder
+namespace Tests.AssemblyBuilderTests
 {
     public class ObjectCreationBuilderTests
     {
@@ -25,7 +25,7 @@ namespace Tests.AssemblyBuilder
             var actual = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToFullString();
 
             Assert.AreEqual(@"using System;
-using Tests.AssemblyBuilder;
+using Tests.AssemblyBuilderTests;
 
 namespace TestNamespace
 {

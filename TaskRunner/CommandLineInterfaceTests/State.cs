@@ -1,6 +1,6 @@
 using CommandLineInterface;
 
-namespace Tests.CommandLineInterface
+namespace Tests.CommandLineInterfaceTests
 {
     class State : IState
     {

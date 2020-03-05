@@ -1,9 +1,8 @@
 ﻿using System;
 using CommandLineInterface;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.CommandLineInterface;
 
-namespace DynamicTaskRunner
+namespace Tests.CommandLineInterfaceTests
 {
     public class TaskRunner : ITaskRunner
     {
@@ -24,9 +23,9 @@ namespace DynamicTaskRunner
             else if (runTaskCommand.Name == "TaskB")
             {
                 var args = new TaskB.Args();
-                args.BoolProp = runTaskCommand.GetValue<Boolean>("BoolProp");
-                args.StringProp = runTaskCommand.GetValue<String>("StringProp");
-                _serviceProvider.GetService<TaskB>().Run(args, _state.GetState<Tests.CommandLineInterface.Solution>());
+                args.BoolProp = runTaskCommand.GetValue<Boolean>("bp", "BoolProp", false);
+                args.StringProp = runTaskCommand.GetValue<String>("sp", "StringProp", false);
+                _serviceProvider.GetService<TaskB>().Run(args, _state.GetState<Solution>());
             }
             else if (runTaskCommand.Name == "TaskC")
             {

@@ -18,7 +18,7 @@ namespace CommandLineInterface
             _arguments = node.Nodes[0].Nodes.Where(x => x.TokenType == "Argument")
                 .Select(x => new Argument
                 {
-                    Name = x.Nodes[0].Text,
+                    Name = GetName(x),
                     Value = GetValue(x),
                     KeyValuePair = GetKeyValuePair(x),
                     Values = GetValues(x),
@@ -27,11 +27,70 @@ namespace CommandLineInterface
                 .ToList();
         }
 
+        public T GetValue<T>(string @switch, string name, bool isDefault)
+        {
+            var argument = GetArgument(@switch, name, isDefault);
+
+            if (argument == null)
+            {
+                return default;
+            }
+
+            if (typeof(T) == typeof(bool) && string.IsNullOrWhiteSpace(argument.Value))
+            {
+                argument.Value = "true";
+            }
+
+            return (T)Convert.ChangeType(argument.Value, typeof(T));
+        }
+
+        private Argument GetArgument(string @switch, string name, bool isDefault)
+        {
+            return _arguments.SingleOrDefault(x => x.Name == @switch
+                                                   || x.Name == name
+                                                   || x.Name == "" && isDefault);
+        }
+
+        public KeyValuePair<K, V> GetKeyValuePair<K, V>(string @switch, string name, bool isDefault)
+        {
+            var argument = GetArgument(@switch, name, isDefault);
+
+            if (argument == null)
+            {
+                return default;
+            }
+
+            return new KeyValuePair<K, V>((K)Convert.ChangeType(argument.KeyValuePair.Key, typeof(K)),
+                (V)Convert.ChangeType(argument.KeyValuePair.Value, typeof(V)));
+        }
+
+        public List<T> GetValues<T>(string @switch, string name, bool isDefault)
+        {
+            return GetArgument(@switch, name, isDefault)?
+                       .Values
+                       .Select(x => (T)Convert.ChangeType(x, typeof(T)))
+                       .ToList()
+                   ?? new List<T>();
+        }
+
+        public List<KeyValuePair<K, V>> GetKeyValuePairs<K, V>(string @switch, string name, bool isDefault)
+        {
+            return GetArgument(@switch, name, isDefault)?
+                       .KeyValuePairs?
+                       .Select(x => new KeyValuePair<K, V>((K)Convert.ChangeType(x.Key, typeof(K)),
+                           (V)Convert.ChangeType(x.Value, typeof(V))))
+                       .ToList()
+                   ?? new List<KeyValuePair<K, V>>();
+        }
+
+        private string GetName(Node node)
+        {
+            return node.Nodes.SingleOrDefault(x => x.TokenType == "Identifier")?.Text ?? "";
+        }
+
         private string GetValue(Node node)
         {
-            var valueNode = node.Nodes.SingleOrDefault(x => x.TokenType == "Value" || x.TokenType == "StringValue");
-
-            return valueNode?.Text;
+            return node.Nodes.SingleOrDefault(x => x.TokenType == "Value" || x.TokenType == "StringValue")?.Text;
         }
 
         private KeyValuePair<string, string> GetKeyValuePair(Node node)
@@ -64,55 +123,6 @@ namespace CommandLineInterface
         }
 
         public string Name { get; }
-
-        public T GetValue<T>(string name)
-        {
-            var argument = _arguments.SingleOrDefault(x => x.Name == name);
-
-            if (argument == null)
-            {
-                return default;
-            }
-
-            if (typeof(T) == typeof(bool) && string.IsNullOrWhiteSpace(argument.Value))
-            {
-                argument.Value = "true";
-            }
-
-            return (T)Convert.ChangeType(argument.Value, typeof(T));
-        }
-
-        public KeyValuePair<K, V> GetKeyValuePair<K, V>(string name)
-        {
-            var argument = _arguments.SingleOrDefault(x => x.Name == name);
-
-            if (argument == null)
-            {
-                return default;
-            }
-
-            return new KeyValuePair<K, V>((K)Convert.ChangeType(argument.KeyValuePair.Key, typeof(K)),
-                (V)Convert.ChangeType(argument.KeyValuePair.Value, typeof(V)));
-        }
-
-        public List<T> GetValues<T>(string name)
-        {
-            return _arguments.SingleOrDefault(x => x.Name == name)?
-                .Values
-                .Select(x => (T)Convert.ChangeType(x, typeof(T)))
-                .ToList()
-                ?? new List<T>();
-        }
-
-        public List<KeyValuePair<K, V>> GetKeyValuePairs<K, V>(string name)
-        {
-            return _arguments.SingleOrDefault(x => x.Name == name)?
-                       .KeyValuePairs?
-                       .Select(x => new KeyValuePair<K, V>((K)Convert.ChangeType(x.Key, typeof(K)),
-                           (V)Convert.ChangeType(x.Value, typeof(V))))
-                       .ToList()
-                   ?? new List<KeyValuePair<K, V>>();
-        }
 
         class Argument
         {

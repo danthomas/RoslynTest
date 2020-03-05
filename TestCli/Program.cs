@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using CommandLineInterface;
+using DynamicTaskRunner;
 
 namespace TestCli
 {
@@ -12,14 +14,26 @@ namespace TestCli
 
             serviceCollection.AddSingleton<IConsole, ProgramConsole>();
 
-            new TaskFactory(serviceCollection).AddTasks(typeof(Program).Assembly);
+            var assembly = typeof(Program).Assembly;
+
+            foreach (var type in assembly.GetTypes()
+                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask))))
+            {
+                serviceCollection.AddTransient(type);
+            }
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            IState state = null;
-            
-            var taskRunner = new TaskRunnerBuilder().Build(serviceProvider, state, typeof(Program).Assembly);
-            //var taskRunner = new DynamicTaskRunner.TaskRunner(serviceProvider, state);
+            var state = new State
+            {
+                Thing = new Thing
+                {
+                    Name = "Abcd"
+                }
+            };
+
+            //var taskRunner = new TaskRunnerBuilder().Build(serviceProvider, state, assembly);
+            var taskRunner = new TaskRunner(serviceProvider, state);
             string line;
 
             while ((line = Console.ReadLine()) != "")
@@ -28,30 +42,4 @@ namespace TestCli
             }
         }
     }
-
-
-
-    class ProgramConsole : IConsole
-    {
-        public void WriteLine(string text)
-        {
-            Console.WriteLine(text);
-        }
-    }
-
-    public class TaskOne : ITask
-    {
-        private readonly IConsole _console;
-
-        public TaskOne(IConsole console)
-        {
-            _console = console;
-        }
-
-        public void Run()
-        {
-            _console.WriteLine("TaskOne");
-        }
-    }
-
 }
