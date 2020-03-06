@@ -6,11 +6,11 @@ namespace CommandLineInterface
 {
     public class ArgDefs<T>
     {
-        private List<SwitchDef> _switches;
+        public List<SwitchDef> Switches { get; set; }
 
         public ArgDefs()
         {
-            _switches = new List<SwitchDef>();
+            Switches = new List<SwitchDef>();
         }
 
         public ArgDefs<T> DefaultRequired<P>(Expression<Func<T, P>> expression, string @switch)
@@ -33,7 +33,7 @@ namespace CommandLineInterface
 
         private void AddSwitch<P>(Expression<Func<T, P>> expression, string @switch, bool isDefault, bool isRequired)
         {
-            _switches.Add(new SwitchDef
+            Switches.Add(new SwitchDef
             {
                 Name = expression.GetPropertyInfo().Name,
                 Switch = @switch,

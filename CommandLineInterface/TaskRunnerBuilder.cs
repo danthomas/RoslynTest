@@ -52,7 +52,7 @@ namespace CommandLineInterface
                                         isb.WithBinaryExpression(beb => beb
                                                 .WithOperator(SyntaxKind.EqualsExpression)
                                                 .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                                .WithRight(eb => eb.StringLiteral(taskDefs[0].Name)))
+                                                .WithRight(eb => eb.Literal(taskDefs[0].Name)))
                                             .WithBody(bsb => bsb.WithStatements(BuildStatements(taskDefs[0])));
 
                                         foreach (var taskDef in taskDefs.Skip(1))
@@ -60,7 +60,7 @@ namespace CommandLineInterface
                                             isb.WithElseIfClause(beb => beb
                                                     .WithOperator(SyntaxKind.EqualsExpression)
                                                     .WithLeft(eb => eb.SimpleMemberAccess("runTaskCommand", "Name"))
-                                                    .WithRight(eb => eb.StringLiteral(taskDef.Name)),
+                                                    .WithRight(eb => eb.Literal(taskDef.Name)),
                                                 BuildStatements(taskDef));
                                         }
 
@@ -116,7 +116,10 @@ namespace CommandLineInterface
                                     .WithExpression(esb => esb
                                         .WithIdentifier("runTaskCommand"))
                                     .WithGenericIdentifier("GetValue", argPropDef.Type)
-                                    .WithArguments(asb => asb.WithExpression(esb => esb.StringLiteral(argPropDef.Name)))))
+                                    .WithArguments(
+                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.Switch ?? "")),
+                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.Name)),
+                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.IsDefault)))))
                         ));
                 }
             }

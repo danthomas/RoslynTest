@@ -18,9 +18,34 @@ namespace CommandLineInterface
         {
             var runMethodInfo = type.GetMethod("Run");
 
+            var switches = new List<SwitchDef>();
+
             var parameter = runMethodInfo
                 .GetParameters()
                 .SingleOrDefault(x => x.ParameterType.IsNested && x.ParameterType.DeclaringType == type);
+
+
+            if (type.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ITask<>)))
+            {
+                var count = type.GetConstructors()[0].GetParameters().Length;
+
+                var args = Enumerable.Repeat<object>(null, count).ToArray();
+
+                var instance = Activator.CreateInstance(type, args);
+
+                var argDefs = instance.GetType().GetProperty("ArgDefs").GetValue(instance);
+                switches = (List<SwitchDef>)argDefs.GetType().GetProperty("Switches").GetValue(argDefs);
+            }
+            else if (parameter != null)
+            {
+                switches = parameter.ParameterType.GetProperties()
+                    .Select(x => new SwitchDef
+                    {
+                        Name = x.Name,
+                        Switch = new string(x.Name.ToCharArray().Where(Char.IsUpper).ToArray()).ToLower()
+                    }).ToList();
+            }
 
             return new TaskDef
             {
@@ -28,22 +53,33 @@ namespace CommandLineInterface
                 Namespace = type.Namespace,
                 ArgsType = parameter == null ? "" : $"{type.FullName}.{parameter.ParameterType.Name}",
                 ParamDefs = runMethodInfo.GetParameters().Select(x => BuildParamDef(x, type)).ToList(),
-                ArgsPropDefs = GetArgPropDefs(parameter)
+                ArgsPropDefs = GetArgPropDefs(parameter, switches)
             };
         }
 
-        private static List<ArgPropDef> GetArgPropDefs(ParameterInfo parameter)
+        private static List<ArgPropDef> GetArgPropDefs(ParameterInfo parameter, List<SwitchDef> switches)
         {
-            return parameter?
+            if (parameter == null)
+            {
+                return new List<ArgPropDef>();
+            }
+
+            return parameter
                 .ParameterType
                 .GetProperties()
-                .Select(x => new ArgPropDef
+                .Select(x =>
                 {
-                    Name = x.Name,
-                    Namespace = x.PropertyType.Namespace,
-                    Type = x.PropertyType.Name
-                }).ToList()
-                   ?? new List<ArgPropDef>();
+                    var @switch = switches.SingleOrDefault(y => x.Name == y.Name);
+
+                    return new ArgPropDef
+                    {
+                        Name = x.Name,
+                        Switch = @switch?.Switch,
+                        IsDefault = @switch?.IsDefault ?? false,
+                        Namespace = x.PropertyType.Namespace,
+                        Type = x.PropertyType.Name
+                    };
+                }).ToList();
         }
 
         private static ParamDef BuildParamDef(ParameterInfo x, Type type)

@@ -1,6 +1,6 @@
 namespace CommandLineInterface
 {
-    class SwitchDef
+    public class SwitchDef
     {
         public string Switch { get; set; }
         public string Name { get; set; }

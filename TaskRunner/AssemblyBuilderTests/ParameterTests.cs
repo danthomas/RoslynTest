@@ -49,7 +49,7 @@ namespace Tests.AssemblyBuilderTests
                                     pb.WithName("i")
                                         .WithPredefinedType(SyntaxKind.IntKeyword)
                                         .WithDefault(esb =>
-                                            esb.NumericalLiteral(123)))
+                                            esb.Literal(123)))
                                 .WithAssignmentExpression(aeb =>
                                     aeb.WithLeft("_i")
                                         .WithRight("i")))

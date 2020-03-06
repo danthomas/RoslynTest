@@ -21,7 +21,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithAssignment(x => x
                                 .WithLeft("_i")
                                 .WithRight(esb => esb   
-                                    .NumericalLiteral(123)))))
+                                    .Literal(123)))))
                         .WithMethod("TestMethod", mb => mb
                             .WithReturnType(SyntaxKind.IntKeyword)
                             .WithStatements(sb => sb.WithInvocation(ieb => ieb
@@ -59,8 +59,8 @@ namespace Tests.AssemblyBuilderTests
                             .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithThisExpression()
                                 .WithIdentifier("SetValue")
-                                .WithArguments(asb => asb.WithExpression(esb => esb.NumericalLiteral(123)),
-                                    asb => asb.WithExpression(esb => esb.NumericalLiteral(1)))))
+                                .WithArguments(asb => asb.WithExpression(esb => esb.Literal(123)),
+                                    asb => asb.WithExpression(esb => esb.Literal(1)))))
                             .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb.WithIdentifier("_i")
@@ -86,7 +86,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithExpression(esb => esb.WithIdentifier("thing"))
                                 .WithIdentifier("SetIntProp")
-                                .WithArguments(asb => asb.WithExpression(esb => esb.NumericalLiteral(123))))))));
+                                .WithArguments(asb => asb.WithExpression(esb => esb.Literal(123))))))));
 
             var thing = new Thing();
             new TestObjectCompiler(compilationUnitBuilder, typeof(Thing))
@@ -135,7 +135,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithStatements(sb => sb.WithInvocation(ieb => ieb
                                 .WithExpression(esb => esb.WithIdentifier("thing"))
                                 .WithGenericIdentifier("SetStringProp", "string")
-                                .WithArguments(asb => asb.WithExpression(esb => esb.StringLiteral("Abcd"))))))));
+                                .WithArguments(asb => asb.WithExpression(esb => esb.Literal("Abcd"))))))));
 
             var thing = new Thing();
             new TestObjectCompiler(compilationUnitBuilder, typeof(Thing))

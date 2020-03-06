@@ -40,7 +40,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithReturnType(SyntaxKind.IntKeyword)
                             .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb => esb
-                                    .NumericalLiteral(123))))))
+                                    .Literal(123))))))
                 );
 
             new TestObjectCompiler(compilationUnitBuilder)
@@ -59,7 +59,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithReturnType(SyntaxKind.StringKeyword)
                             .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb => esb
-                                    .StringLiteral("123"))))))
+                                    .Literal("123"))))))
                 );
 
             new TestObjectCompiler(compilationUnitBuilder)

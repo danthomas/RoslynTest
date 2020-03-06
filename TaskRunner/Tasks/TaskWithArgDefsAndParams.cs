@@ -1,12 +1,13 @@
 using CommandLineInterface;
+using Tests.CommandLineInterfaceTests;
 
-namespace Tests.CommandLineInterfaceTests
+namespace Tests.Tasks
 {
-    public class TaskB : ITask<TaskB.Args>
+    public class TaskWithArgDefsAndParams : ITask<TaskWithArgDefsAndParams.Args>
     {
         private readonly IConsole _console;
 
-        public TaskB(IConsole console)
+        public TaskWithArgDefsAndParams(IConsole console)
         {
             _console = console;
         }
@@ -19,11 +20,11 @@ namespace Tests.CommandLineInterfaceTests
 
         public void Run(Args args, Solution solution)
         {
-            _console.WriteLine($"TaskB {solution.Id} {args.StringProp} {args.BoolProp}");
+            _console.WriteLine($"TaskWithArgDefsAndParams {solution.Id} {args.StringProp} {args.BoolProp}");
         }
 
-        public ArgDefs<TaskB.Args> ArgDefs => new ArgDefs<Args>()
+        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()
             .DefaultRequired(x => x.StringProp, "sp")
-            .Optional(x => x.BoolProp, "sp");
+            .Optional(x => x.BoolProp, "bp");
     }
 }

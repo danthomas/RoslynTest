@@ -19,7 +19,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb
                                     .WithExpression(esb => esb
-                                        .StringLiteral("Fnord")))))));
+                                        .Literal("Fnord")))))));
 
             new TestRunner(compilationUnitBuilder)
                 .AssertTestMethod("Fnord");

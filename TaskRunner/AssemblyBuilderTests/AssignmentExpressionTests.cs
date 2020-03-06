@@ -31,7 +31,7 @@ namespace Tests.AssemblyBuilderTests
                             .WithAssignmentExpression(asb => asb
                                 .WithLeft("Prop")
                                 .WithRight(esb2 => esb2
-                                    .NumericalLiteral(123))))));
+                                    .Literal(123))))));
 
             new TestObjectCompiler(compilationUnitBuilder)
                 .CreateInstance()

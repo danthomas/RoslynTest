@@ -1,19 +1,19 @@
 using CommandLineInterface;
 
-namespace Tests.CommandLineInterfaceTests
+namespace Tests.Tasks
 {
-    public class TaskA : ITask
+    public class TaskWithNoArgs : ITask
     {
         private readonly IConsole _console;
 
-        public TaskA(IConsole console)
+        public TaskWithNoArgs(IConsole console)
         {
             _console = console;
         }
 
         public void Run()
         {
-            _console.WriteLine("TaskA");    
+            _console.WriteLine("TaskWithNoArgs");
         }
     }
 }

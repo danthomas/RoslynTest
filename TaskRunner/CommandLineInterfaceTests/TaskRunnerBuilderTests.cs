@@ -2,6 +2,7 @@ using System;
 using CommandLineInterface;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Tests.Tasks;
 
 namespace Tests.CommandLineInterfaceTests
 {
@@ -13,8 +14,9 @@ namespace Tests.CommandLineInterfaceTests
             var serviceCollection = new ServiceCollection();
             var console = new Console();
 
-            serviceCollection.AddTransient<TaskA>();
-            serviceCollection.AddTransient<TaskB>();
+            serviceCollection.AddTransient<TaskWithNoArgs>();
+            serviceCollection.AddTransient<TaskWithArgParam>();
+            serviceCollection.AddTransient<TaskWithArgDefsAndParams>();
             serviceCollection.AddSingleton<IConsole>(console);
 
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
@@ -25,14 +27,19 @@ namespace Tests.CommandLineInterfaceTests
             };
 
             var taskRunner = new TaskRunnerBuilder()
-                .Build(serviceProvider, state, typeof(TaskA).Assembly);
+                .Build(serviceProvider, state, typeof(TaskWithArgParam).Assembly);
 
-            taskRunner.Run(new RunTaskCommand("TaskA"));
+            //taskRunner = new DynamicTaskRunner.TaskRunner(serviceProvider, state);
 
-            taskRunner.Run(new RunTaskCommand("TaskB -BoolProp true -StringProp ABCD"));
+            taskRunner.Run(new RunTaskCommand("TaskWithNoArgs"));
 
-            Assert.AreEqual(@"TaskA
-TaskB 123 ABCD True", console.Text);
+            taskRunner.Run(new RunTaskCommand("TaskWithArgParam -BoolProp true -StringProp ABCD"));
+
+            taskRunner.Run(new RunTaskCommand("TaskWithArgDefsAndParams -BoolProp true -StringProp ABCD"));
+
+            Assert.AreEqual(@"TaskWithNoArgs
+TaskWithArgParam ABCD True
+TaskWithArgDefsAndParams 123 ABCD True", console.Text);
         }
     }
 }

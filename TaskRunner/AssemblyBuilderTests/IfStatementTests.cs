@@ -27,32 +27,32 @@ namespace Tests.AssemblyBuilderTests
                                     isb
                                         .WithBinaryExpression(beb => beb
                                             .WithLeft(esb => esb.WithIdentifier("i"))
-                                            .WithRight(esb => esb.NumericalLiteral(1)))
+                                            .WithRight(esb => esb.Literal(1)))
                                         .WithBody(bsb => bsb
                                             .WithStatements(x => x
                                                 .WithReturnStatement(rsb => rsb
-                                                    .WithExpression(esb2 => esb2.StringLiteral("One")))));
+                                                    .WithExpression(esb2 => esb2.Literal("One")))));
 
                                     isb.WithElseIfClause(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
-                                        .WithRight(esb => esb.NumericalLiteral(2)), 
+                                        .WithRight(esb => esb.Literal(2)), 
                                         ssb => ssb
                                             .WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("Two"))));
+                                                .WithExpression(esb2 => esb2.Literal("Two"))));
 
                                     isb.WithElseIfClause(ecsb => ecsb.WithBinaryExpression(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
-                                        .WithRight(esb => esb.NumericalLiteral(3)))
+                                        .WithRight(esb => esb.Literal(3)))
                                         .WithBody(bsb => bsb.WithStatements(ssb => ssb
                                             .WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("Three"))))));
+                                                .WithExpression(esb2 => esb2.Literal("Three"))))));
 
                                     isb.WithElseIfClause(beb => beb
                                         .WithLeft(esb => esb.WithIdentifier("i"))
-                                        .WithRight(esb => esb.NumericalLiteral(4)), 
+                                        .WithRight(esb => esb.Literal(4)), 
                                         ssb => ssb
                                             .WithReturnStatement(rsb => rsb
-                                                .WithExpression(esb2 => esb2.StringLiteral("Four"))));
+                                                .WithExpression(esb2 => esb2.Literal("Four"))));
 
                                 })
                                 .WithStatements(sb => sb.WithReturnStatement(rsb => rsb.WithExpression(esb => esb.WithStringLiteralExpression(""))));

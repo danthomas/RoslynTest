@@ -32,8 +32,8 @@ namespace TestCli
                 }
             };
 
-            //var taskRunner = new TaskRunnerBuilder().Build(serviceProvider, state, assembly);
-            var taskRunner = new TaskRunner(serviceProvider, state);
+            var taskRunner = new TaskRunnerBuilder().Build(serviceProvider, state, assembly);
+            //var taskRunner = new TaskRunner(serviceProvider, state);
             string line;
 
             while ((line = Console.ReadLine()) != "")

@@ -29,15 +29,21 @@ namespace AssemblyBuilder
             return this;
         }
 
-        public ExpressionSyntaxBuilder NumericalLiteral(int i)
+        public ExpressionSyntaxBuilder Literal(int i)
         {
             Expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(i));
             return this;
         }
 
-        public ExpressionSyntaxBuilder StringLiteral(string s)
+        public ExpressionSyntaxBuilder Literal(string s)
         {
             Expression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(s));
+            return this;
+        }
+
+        public ExpressionSyntaxBuilder Literal(bool b)
+        {
+            Expression = SyntaxFactory.LiteralExpression(b? SyntaxKind.TrueLiteralExpression: SyntaxKind.FalseLiteralExpression);
             return this;
         }
 
