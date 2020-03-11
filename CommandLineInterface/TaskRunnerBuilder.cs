@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using AssemblyBuilder;
@@ -44,7 +46,13 @@ namespace CommandLineInterface
                             })
                             .WithMethod("Run", mb =>
                             {
-                                mb.WithParameter("IRunTaskCommand", "runTaskCommand");
+                                mb.WithReturnType("RunResult")
+                                    .WithParameter("IRunTaskCommand", "runTaskCommand")
+                                    .WithVariable("RunResult", "runResult", true)
+                                    .WithExpression(esb => esb.WithAssignment(aeb => aeb
+                                        .WithLeft("runResult", "Success")
+                                        .WithRight(aeb => aeb.Literal(true))));
+
                                 if (taskDefs.Any())
                                 {
                                     mb.WithIfStatement(isb =>
@@ -66,11 +74,17 @@ namespace CommandLineInterface
 
                                     });
                                 }
+
+                                mb.WithStatements(sb => sb
+                                    .WithReturnStatement(rsb => rsb
+                                        .WithExpression(esb => esb
+                                            .WithIdentifier("runResult"))));
                             });
                     });
                 });
 
             var code = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToString();
+
 
             var references = new[]
             {
@@ -79,16 +93,22 @@ namespace CommandLineInterface
                 "System.Private.CoreLib.dll",
                 "System.Console.dll",
                 "System.Runtime.dll",
-                
+
                 "C:\\Users\\dan.thomas\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\3.1.0\\lib\\netcoreapp3.1\\Microsoft.Extensions.DependencyInjection.dll",
                 "C:\\Users\\dan.thomas\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.2\\lib\\netstandard2.0\\Microsoft.Extensions.DependencyInjection.Abstractions.dll",
                 typeof(IServiceProvider).Assembly.Location,
                 typeof(ITaskRunner).Assembly.Location,
-                assembly.Location
+                typeof(IList).Assembly.Location,
+                typeof(IList<>).Assembly.Location,
+                assembly.Location,
+
+                "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\3.1.1\\System.Collections.dll"
             };
 
             var type = new Compiler().Compile(compilationUnitBuilder.CompilationUnitSyntax, references)
                 .GetType("DynamicTaskRunner.TaskRunner");
+
+            File.WriteAllText(@"c:\temp\RoslynTest\TestCli\TaskRunner.g.cs", code);
 
             return (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
         }
@@ -99,12 +119,44 @@ namespace CommandLineInterface
 
             if (!string.IsNullOrWhiteSpace(taskDef.ArgsType))
             {
-                statements.Add(
-                    ssb => ssb
+                statements.Add(ssb => ssb
                         .WithLocalDeclaration(lsdb => lsdb
                             .WithType("var")
                             .WithName("args")
-                            .WithInitialiser(esb => esb.WithObjectCreation(taskDef.ArgsType.Split('.')))));
+                            .WithInitialiser(esb => esb
+                                .WithObjectCreation(taskDef.ArgsType.Split('.')))));
+
+                foreach (var argPropDef in taskDef.ArgsPropDefs)
+                {
+                    if (argPropDef.IsRequired)
+                    {
+                        statements.Add(ssb => ssb.WithIfStatement(isb => isb.WithBinaryExpression(beb => beb
+                                .WithLeft(esb => esb.WithInvocation(ieb => ieb
+                                    .WithExpression(esb => esb.WithIdentifier("runTaskCommand"))
+                                    .WithIdentifier("HasSwitch")
+                                    .WithArguments(ab => ab.WithExpression(esb2 => esb2.Literal(argPropDef.Switch)),
+                                        ab => ab.WithExpression(esb2 => esb2.Literal(argPropDef.Name)),
+                                        ab => ab.WithExpression(esb2 => esb2.Literal(argPropDef.IsDefault)))))
+                                .WithRight(esb => esb.Literal(false)))
+                            .WithBody(bsb => bsb.WithStatements(esb => esb.WithAssignment(aeb => aeb
+                                    .WithLeft("runResult", "Success")
+                                    .WithRight(aeb => aeb.Literal(false))),
+                                esb => esb.WithInvocation(ieb => ieb
+                                    .WithMemberAccess("runResult", "Errors")
+                                    .WithIdentifier("Add")
+                                    .WithArguments(asb => asb
+                                        .WithExpression(esb => esb
+                                            .Literal($"{argPropDef.Switch} {argPropDef.Name} required."))))))));
+                    }
+                }
+
+                statements.Add(ssb => ssb.WithIfStatement(isb => isb.WithBinaryExpression(beb => beb
+                        .WithLeft(esb => esb.SimpleMemberAccess("runResult", "Success"))
+                        .WithRight(esb => esb.Literal(false)))
+                        .WithBody(bsb => bsb.WithStatements(ssb => ssb
+                            .WithReturnStatement(rsb => rsb
+                                .WithExpression(esb => esb
+                                    .WithIdentifier("runResult")))))));
 
                 foreach (var argPropDef in taskDef.ArgsPropDefs)
                 {
@@ -113,14 +165,13 @@ namespace CommandLineInterface
                             .WithLeft("args", argPropDef.Name)
                             .WithRight(esb => esb
                                 .WithInvocation(ieb => ieb
-                                    .WithExpression(esb => esb
+                                    .WithExpression(esb2 => esb2
                                         .WithIdentifier("runTaskCommand"))
                                     .WithGenericIdentifier("GetValue", argPropDef.Type)
                                     .WithArguments(
-                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.Switch ?? "")),
-                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.Name)),
-                                        asb => asb.WithExpression(esb => esb.Literal(argPropDef.IsDefault)))))
-                        ));
+                                        asb => asb.WithExpression(esb3 => esb3.Literal(argPropDef.Switch ?? "")),
+                                        asb => asb.WithExpression(esb3 => esb3.Literal(argPropDef.Name)),
+                                        asb => asb.WithExpression(esb3 => esb3.Literal(argPropDef.IsDefault)))))));
                 }
             }
 
@@ -128,14 +179,11 @@ namespace CommandLineInterface
                 .WithInvocation(ieb2 => ieb2
                     .WithExpression(esb => esb
                         .WithInvocation(ieb => ieb
-                            .WithExpression(esb => esb
+                            .WithExpression(esb2 => esb2
                                 .WithIdentifier("_serviceProvider"))
                             .WithGenericIdentifier("GetService", taskDef.Name)))
                     .WithIdentifier("Run")
-                    .WithArguments(BuildArguments(taskDef)
-
-                        )));
-
+                    .WithArguments(BuildArguments(taskDef))));
 
             return statements.ToArray();
         }
@@ -157,7 +205,7 @@ namespace CommandLineInterface
                     arguments.Add(asb => asb
                         .WithExpression(esb => esb
                             .WithInvocation(ieb => ieb
-                                .WithExpression(esb => esb
+                                .WithExpression(esb2 => esb2
                                     .WithIdentifier("_state"))
                                 .WithGenericIdentifier("GetState", taskDefParamDef.Type))));
                 }

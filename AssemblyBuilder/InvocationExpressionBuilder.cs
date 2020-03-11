@@ -76,5 +76,17 @@ namespace AssemblyBuilder
             InvocationExpression = InvocationExpression.AddArgumentListArguments(arguments);
             return this;
         }
+
+        public InvocationExpressionBuilder WithMemberAccess(params string[] names)
+        {
+            var expressionSyntax = (MemberAccessExpressionSyntax)InvocationExpression.Expression;
+
+            InvocationExpression = InvocationExpression
+                .WithExpression(expressionSyntax.WithExpression(SyntaxFactory
+                    .MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName(names[0]), 
+                    SyntaxFactory.IdentifierName(names[1]))));
+            return this;
+        }
     }
 }

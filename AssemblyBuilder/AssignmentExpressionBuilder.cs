@@ -17,9 +17,20 @@ namespace AssemblyBuilder
 
         public AssignmentExpressionBuilder WithLeft(params string[] names)
         {
-            var typeSyntax = new TypeSyntaxBuilder().Build(names);
+            if (names.Length == 1)
+            {
+                var typeSyntax = new TypeSyntaxBuilder().Build(names);
 
-            AssignmentExpression = AssignmentExpression.WithLeft(typeSyntax);
+                AssignmentExpression = AssignmentExpression.WithLeft(typeSyntax);
+            }
+            else
+            {
+                AssignmentExpression = AssignmentExpression.WithLeft(SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName(names[0]),
+                    SyntaxFactory.IdentifierName(names[1])));
+            }
+
             return this;
         }
 

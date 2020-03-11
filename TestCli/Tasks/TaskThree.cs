@@ -21,7 +21,7 @@ namespace TestCli.Tasks
             public string Name { get; set; }
         }
 
-        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>().DefaultRequired(x => x.Name, "-n");
+        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>().DefaultRequired(x => x.Name, "n");
     }
 
     public class TaskFour : ITask

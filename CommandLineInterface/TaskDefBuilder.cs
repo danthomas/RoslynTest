@@ -76,6 +76,7 @@ namespace CommandLineInterface
                         Name = x.Name,
                         Switch = @switch?.Switch,
                         IsDefault = @switch?.IsDefault ?? false,
+                        IsRequired = @switch?.IsRequired ?? false,
                         Namespace = x.PropertyType.Namespace,
                         Type = x.PropertyType.Name
                     };

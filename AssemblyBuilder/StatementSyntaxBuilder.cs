@@ -37,11 +37,20 @@ namespace AssemblyBuilder
             return this;
         }
 
-        public void WithLocalDeclaration(Action<LocalDeclarationSyntaxBuilder> ldsb)
+        public StatementSyntaxBuilder WithLocalDeclaration(Action<LocalDeclarationSyntaxBuilder> ldsb)
         {
             var localDeclarationSyntaxBuilder = new LocalDeclarationSyntaxBuilder();
             ldsb(localDeclarationSyntaxBuilder);
             StatementSyntax = localDeclarationSyntaxBuilder.LocalDeclaration;
+            return this;
+        }
+
+        public StatementSyntaxBuilder WithIfStatement(Action<IfStatementBuilder> isb)
+        {
+            var ifStatementBuilder = new IfStatementBuilder();
+            isb(ifStatementBuilder);
+            StatementSyntax = ifStatementBuilder.IfStatement;
+            return this;
         }
     }
 }

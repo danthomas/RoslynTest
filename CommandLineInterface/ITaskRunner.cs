@@ -2,6 +2,6 @@ namespace CommandLineInterface
 {
     public interface ITaskRunner
     {
-        void Run(IRunTaskCommand runTaskCommand);
+        RunResult Run(IRunTaskCommand runTaskCommand);
     }
 }

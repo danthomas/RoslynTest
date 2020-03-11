@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using CommandLineInterface;
-using DynamicTaskRunner;
 
 namespace TestCli
 {
@@ -38,7 +37,17 @@ namespace TestCli
 
             while ((line = Console.ReadLine()) != "")
             {
-                taskRunner.Run(new RunTaskCommand(line));
+                var runTaskCommand = new RunTaskCommand(line);
+
+                var runResult = taskRunner.Run(runTaskCommand);
+
+                if (!runResult.Success)
+                {
+                    foreach (var error in runResult.Errors)
+                    {
+                        Console.WriteLine(error);
+                    }
+                }
             }
         }
     }

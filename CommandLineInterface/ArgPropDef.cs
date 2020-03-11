@@ -7,5 +7,6 @@ namespace CommandLineInterface
         public string Namespace { get; set; }
         public string Switch { get; set; }
         public bool IsDefault { get; set; }
+        public bool IsRequired { get; set; }
     }
 }

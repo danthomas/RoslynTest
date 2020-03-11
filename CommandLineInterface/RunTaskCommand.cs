@@ -44,6 +44,11 @@ namespace CommandLineInterface
             return (T)Convert.ChangeType(argument.Value, typeof(T));
         }
 
+        public bool HasSwitch(string @switch, string name, bool isDefault)
+        {
+            return GetArgument(@switch, name, isDefault) != null;
+        }
+
         private Argument GetArgument(string @switch, string name, bool isDefault)
         {
             return _arguments.SingleOrDefault(x => x.Name == @switch

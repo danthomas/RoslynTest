@@ -1,4 +1,5 @@
 using AssemblyBuilder;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Tests.Utils;
@@ -189,6 +190,29 @@ namespace TestNamespace
             new TestObjectCompiler(compilationUnitBuilder, typeof(Thing))
                 .CreateInstance()
                 .AssertMethod("TestMethod", "String Abcd", thing, "Abcd");
+        }
+
+
+        [Test]
+        public void InvocationWithMemberAccess()
+        {
+            /*
+*/
+
+            var compilationUnitBuilder = new CompilationUnitBuilder()
+                .WithUsings("System")
+                .WithUsing<Thing>()
+                .WithNamespace("TestNamespace", nb => nb
+                    .WithClass("TestClass", new string[0], cb => cb
+                        .WithMethod("TestMethod", mb => mb
+                            .WithStatements(sb => sb
+                                .WithReturnStatement(rsb => rsb.WithExpression(esb3 => esb3
+                                    .WithInvocation(ieb2 => ieb2
+                                        .WithMemberAccess("runResult", "Errors")
+                                        .WithIdentifier("Add")
+                                        .WithArguments(asb => asb.WithExpression(esb => esb.WithIdentifier("s"))))))))));
+
+            var actual = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToFullString();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -74,7 +75,7 @@ namespace AssemblyBuilder
                 x(statementSyntaxBuilder);
                 return statementSyntaxBuilder.StatementSyntax;
             }).ToArray();
-            
+
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(statementSyntaxes);
             return this;
         }
@@ -84,6 +85,44 @@ namespace AssemblyBuilder
             var expressionStatementBuilder = new ExpressionStatementBuilder();
             esb(expressionStatementBuilder);
             MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(expressionStatementBuilder.ExpressionStatementSyntax);
+            return this;
+        }
+
+        public MethodBuilder WithVariable(SyntaxKind syntaxKind, string name)
+        {
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(
+                SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(syntaxKind)),
+                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
+                        {
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(name))
+                        })))
+                );
+
+            return this;
+        }
+
+        public MethodBuilder WithVariable(string type, string name, bool createNew = false)
+        {
+            var variableDeclaratorSyntax = SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(name));
+
+            if (createNew)
+            {
+                variableDeclaratorSyntax = variableDeclaratorSyntax.WithInitializer(SyntaxFactory.EqualsValueClause(
+                    SyntaxFactory.ObjectCreationExpression(SyntaxFactory.IdentifierName(type))
+                        .WithArgumentList(SyntaxFactory.ArgumentList())));
+
+            }
+
+            MethodDeclarationSyntax = MethodDeclarationSyntax.AddBodyStatements(
+                SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(type),
+                        SyntaxFactory.SeparatedList(new List<VariableDeclaratorSyntax>
+                        {
+                            variableDeclaratorSyntax
+                        })))
+                );
+
             return this;
         }
     }
