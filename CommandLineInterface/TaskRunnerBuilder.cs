@@ -12,13 +12,15 @@ namespace CommandLineInterface
 {
     public class TaskRunnerBuilder
     {
-        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, Assembly assembly)
+        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, Assembly assembly, params Type[] tasks)
         {
             var taskTypes = assembly.GetTypes()
                 .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask)))
-                .ToArray();
+                .ToList();
 
-            var taskDefs = new TaskDefBuilder().Build(taskTypes);
+            taskTypes.AddRange(tasks);
+
+            var taskDefs = new TaskDefBuilder().Build(taskTypes.ToArray());
 
             var usings = new List<string> { "System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface" };
 

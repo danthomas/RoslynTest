@@ -9,5 +9,10 @@ namespace TestCli
         {
             Console.WriteLine(text);
         }
+
+        public string ReadLine()
+        {
+            return Console.ReadLine();
+        }
     }
 }

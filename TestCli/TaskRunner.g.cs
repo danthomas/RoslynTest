@@ -56,6 +56,10 @@ namespace DynamicTaskRunner
             {
                 _serviceProvider.GetService<TaskTwo>().Run(_state.GetState<TestCli.Thing>());
             }
+            else if (runTaskCommand.Name == "Quit")
+            {
+                _serviceProvider.GetService<Quit>().Run();
+            }
 
             return runResult;
         }

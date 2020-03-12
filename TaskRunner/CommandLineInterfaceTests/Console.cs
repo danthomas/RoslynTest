@@ -18,5 +18,10 @@ namespace Tests.CommandLineInterfaceTests
         {
             _text += text + Environment.NewLine;
         }
+
+        public string ReadLine()
+        {
+            return "";
+        }
     }
 }

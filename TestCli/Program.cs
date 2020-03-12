@@ -9,19 +9,7 @@ namespace TestCli
     {
         static void Main(string[] args)
         {
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddSingleton<IConsole, ProgramConsole>();
-
-            var assembly = typeof(Program).Assembly;
-
-            foreach (var type in assembly.GetTypes()
-                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask))))
-            {
-                serviceCollection.AddTransient(type);
-            }
-
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var programConsole = new ProgramConsole();
 
             var state = new State
             {
@@ -31,24 +19,9 @@ namespace TestCli
                 }
             };
 
-            var taskRunner = new TaskRunnerBuilder().Build(serviceProvider, state, assembly);
-            //var taskRunner = new TaskRunner(serviceProvider, state);
-            string line;
+            var assembly = typeof(Program).Assembly;
 
-            while ((line = Console.ReadLine()) != "")
-            {
-                var runTaskCommand = new RunTaskCommand(line);
-
-                var runResult = taskRunner.Run(runTaskCommand);
-
-                if (!runResult.Success)
-                {
-                    foreach (var error in runResult.Errors)
-                    {
-                        Console.WriteLine(error);
-                    }
-                }
-            }
+            new App().Run(programConsole, state, assembly);
         }
     }
 }
