@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using CommandLineInterface;
-using TestCli.Tasks;
-using TestCli;
+using Tests.Tasks;
+using Tests.CommandLineInterfaceTests;
 
 namespace DynamicTaskRunner
 {
@@ -20,17 +20,13 @@ namespace DynamicTaskRunner
         {
             RunResult runResult = new RunResult();
             runResult.Success = true;
-            if (runTaskCommand.Name == "TaskOne")
+            if (runTaskCommand.Name == "TaskWithArgDefsAndParams")
             {
-                _serviceProvider.GetService<TaskOne>().Run();
-            }
-            else if (runTaskCommand.Name == "TaskThree")
-            {
-                var args = new TestCli.Tasks.TaskThree.Args();
-                if (runTaskCommand.HasSwitch("n", "Name", true) == false)
+                var args = new Tests.Tasks.TaskWithArgDefsAndParams.Args();
+                if (runTaskCommand.HasSwitch("sp", "StringProp", true) == false)
                 {
                     runResult.Success = false;
-                    runResult.Errors.Add("n Name required.");
+                    runResult.Errors.Add("sp StringProp required.");
                 }
 
                 if (runResult.Success == false)
@@ -38,27 +34,25 @@ namespace DynamicTaskRunner
                     return runResult;
                 }
 
-                args.Name = runTaskCommand.GetValue<string>("n", "Name", true);
-                _serviceProvider.GetService<TaskThree>().Run(args);
+                args.BoolProp = runTaskCommand.GetValue<bool>("bp", "BoolProp", false);
+                args.StringProp = runTaskCommand.GetValue<string>("sp", "StringProp", true);
+                _serviceProvider.GetService<TaskWithArgDefsAndParams>().Run(args, _state.GetState<Tests.CommandLineInterfaceTests.Solution>());
             }
-            else if (runTaskCommand.Name == "TaskFour")
+            else if (runTaskCommand.Name == "TaskWithArgParam")
             {
-                var args = new TestCli.Tasks.TaskFour.Args();
+                var args = new Tests.Tasks.TaskWithArgParam.Args();
                 if (runResult.Success == false)
                 {
                     return runResult;
                 }
 
-                args.Name = runTaskCommand.GetValue<string>("n", "Name", false);
-                _serviceProvider.GetService<TaskFour>().Run(args);
+                args.BoolProp = runTaskCommand.GetValue<bool>("bp", "BoolProp", false);
+                args.StringProp = runTaskCommand.GetValue<string>("sp", "StringProp", false);
+                _serviceProvider.GetService<TaskWithArgParam>().Run(args);
             }
-            else if (runTaskCommand.Name == "TaskTwo")
+            else if (runTaskCommand.Name == "TaskWithNoArgs")
             {
-                _serviceProvider.GetService<TaskTwo>().Run(_state.GetState<TestCli.Thing>());
-            }
-            else if (runTaskCommand.Name == "Quit")
-            {
-                _serviceProvider.GetService<Quit>().Run();
+                _serviceProvider.GetService<TaskWithNoArgs>().Run();
             }
 
             return runResult;
