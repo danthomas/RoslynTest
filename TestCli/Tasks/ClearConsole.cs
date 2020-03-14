@@ -2,18 +2,18 @@
 
 namespace TestCli.Tasks
 {
-    public class TaskOne : ITask
+    public class ClearConsole : ITask
     {
         private readonly IConsole _console;
 
-        public TaskOne(IConsole console)
+        public ClearConsole(IConsole console)
         {
             _console = console;
         }
 
         public void Run()
         {
-            _console.WriteLine("Running TaskOne");
+            _console.Clear();
         }
     }
 }

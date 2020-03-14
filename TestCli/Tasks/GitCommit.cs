@@ -2,18 +2,18 @@
 
 namespace TestCli.Tasks
 {
-    public class TaskOne : ITask
+    public class GitCommit : ITask
     {
         private readonly IConsole _console;
 
-        public TaskOne(IConsole console)
+        public GitCommit(IConsole console)
         {
             _console = console;
         }
 
         public void Run()
         {
-            _console.WriteLine("Running TaskOne");
+            _console.WriteLine("Running GitCommit");
         }
     }
 }

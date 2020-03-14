@@ -82,7 +82,14 @@ namespace CommandLineInterface
 
                     commands.Insert(0, line);
 
-                    taskRunner.Run(new RunTaskCommand(line));
+                    var runResult = taskRunner.Run(new RunTaskCommand(line));
+                    if (!runResult.Success)
+                    {
+                        foreach (var error in runResult.Errors)
+                        {
+                            console.WriteLine(error);
+                        }
+                    }
                     commandIndex = -1;
                     matches = null;
                     return null;
@@ -115,7 +122,6 @@ namespace CommandLineInterface
                 }
 
                 return line;
-
             };
 
             console.Next = () =>
