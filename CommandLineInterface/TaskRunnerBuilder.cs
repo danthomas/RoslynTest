@@ -20,6 +20,8 @@ namespace CommandLineInterface
 
             taskTypes.AddRange(tasks);
 
+            Tasks = taskTypes.Select(x => x.Name).ToList();
+
             var taskDefs = new TaskDefBuilder().Build(taskTypes.ToArray());
 
             var usings = new List<string> { "System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface" };
@@ -114,6 +116,8 @@ namespace CommandLineInterface
 
             return (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
         }
+
+        public List<string> Tasks { get; private set; }
 
         private Action<StatementSyntaxBuilder>[] BuildStatements(TaskDef taskDef)
         {

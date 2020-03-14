@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using CommandLineInterface;
-using Tests.Tasks;
-using Tests.CommandLineInterfaceTests;
+using TestCli.Tasks;
+using TestCli;
 
 namespace DynamicTaskRunner
 {
@@ -20,13 +20,53 @@ namespace DynamicTaskRunner
         {
             RunResult runResult = new RunResult();
             runResult.Success = true;
-            if (runTaskCommand.Name == "TaskWithArgDefsAndParams")
+            if (runTaskCommand.Name == "TaskOne")
             {
-                var args = new Tests.Tasks.TaskWithArgDefsAndParams.Args();
-                if (runTaskCommand.HasSwitch("sp", "StringProp", true) == false)
+                _serviceProvider.GetService<TaskOne>().Run();
+            }
+            else if (runTaskCommand.Name == "ClearConsole")
+            {
+                _serviceProvider.GetService<ClearConsole>().Run();
+            }
+            else if (runTaskCommand.Name == "Explore")
+            {
+                _serviceProvider.GetService<Explore>().Run();
+            }
+            else if (runTaskCommand.Name == "EditCode")
+            {
+                _serviceProvider.GetService<EditCode>().Run();
+            }
+            else if (runTaskCommand.Name == "EditVisualStudio")
+            {
+                _serviceProvider.GetService<EditVisualStudio>().Run();
+            }
+            else if (runTaskCommand.Name == "GitResetHardHead")
+            {
+                _serviceProvider.GetService<GitResetHardHead>().Run();
+            }
+            else if (runTaskCommand.Name == "GitCommitWip")
+            {
+                _serviceProvider.GetService<GitCommitWip>().Run();
+            }
+            else if (runTaskCommand.Name == "GitCommit")
+            {
+                _serviceProvider.GetService<GitCommit>().Run();
+            }
+            else if (runTaskCommand.Name == "GitCheckoutMaster")
+            {
+                _serviceProvider.GetService<GitCheckoutMaster>().Run();
+            }
+            else if (runTaskCommand.Name == "GitCheckout")
+            {
+                _serviceProvider.GetService<GitCheckout>().Run();
+            }
+            else if (runTaskCommand.Name == "TaskThree")
+            {
+                var args = new TestCli.Tasks.TaskThree.Args();
+                if (runTaskCommand.HasSwitch("n", "Name", true) == false)
                 {
                     runResult.Success = false;
-                    runResult.Errors.Add("sp StringProp required.");
+                    runResult.Errors.Add("n Name required.");
                 }
 
                 if (runResult.Success == false)
@@ -34,25 +74,27 @@ namespace DynamicTaskRunner
                     return runResult;
                 }
 
-                args.BoolProp = runTaskCommand.GetValue<bool>("bp", "BoolProp", false);
-                args.StringProp = runTaskCommand.GetValue<string>("sp", "StringProp", true);
-                _serviceProvider.GetService<TaskWithArgDefsAndParams>().Run(args, _state.GetState<Tests.CommandLineInterfaceTests.Solution>());
+                args.Name = runTaskCommand.GetValue<string>("n", "Name", true);
+                _serviceProvider.GetService<TaskThree>().Run(args);
             }
-            else if (runTaskCommand.Name == "TaskWithArgParam")
+            else if (runTaskCommand.Name == "TaskFour")
             {
-                var args = new Tests.Tasks.TaskWithArgParam.Args();
+                var args = new TestCli.Tasks.TaskFour.Args();
                 if (runResult.Success == false)
                 {
                     return runResult;
                 }
 
-                args.BoolProp = runTaskCommand.GetValue<bool>("bp", "BoolProp", false);
-                args.StringProp = runTaskCommand.GetValue<string>("sp", "StringProp", false);
-                _serviceProvider.GetService<TaskWithArgParam>().Run(args);
+                args.Name = runTaskCommand.GetValue<string>("n", "Name", false);
+                _serviceProvider.GetService<TaskFour>().Run(args);
             }
-            else if (runTaskCommand.Name == "TaskWithNoArgs")
+            else if (runTaskCommand.Name == "TaskTwo")
             {
-                _serviceProvider.GetService<TaskWithNoArgs>().Run();
+                _serviceProvider.GetService<TaskTwo>().Run(_state.GetState<TestCli.Thing>());
+            }
+            else if (runTaskCommand.Name == "Quit")
+            {
+                _serviceProvider.GetService<Quit>().Run();
             }
 
             return runResult;

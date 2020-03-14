@@ -22,8 +22,8 @@ namespace Tests.CommandLineInterfaceTests
         [TestCase("AbcCde", "abcd", MatchType.Full)]
         public void Test(string @string, string pattern, MatchType expected)
         {
-            var matchType = new PatternMatcher().Match(@string, pattern);
-            Assert.AreEqual(expected, matchType);
+            var match = new PatternMatcher().Match(@string, pattern);
+            Assert.AreEqual(expected, match.Type);
         }
     }
 }

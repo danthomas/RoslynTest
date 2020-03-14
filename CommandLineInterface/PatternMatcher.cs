@@ -4,11 +4,11 @@ namespace CommandLineInterface
 {
     public class PatternMatcher
     {
-        public MatchType Match(string name, string pattern)
+        public Match Match(string name, string pattern)
         {
             var patternGen = new PatternGenerator();
 
-            var patterns = patternGen.Generate(pattern).ToArray();
+            var patterns = patternGen.Generate(pattern.Length < 5 ? pattern : pattern.Substring(0, 5)).ToArray();
 
             var words = name.ToWords();
 
@@ -32,13 +32,21 @@ namespace CommandLineInterface
 
                 if (match)
                 {
-                    return words.Length == p.Count 
-                        ? MatchType.Full
-                        : MatchType.Partial;
+                    return new Match
+                    {
+                        Text = name,
+                        Type = words.Length == p.Count
+                            ? MatchType.Full
+                            : MatchType.Partial
+                    };
                 }
             }
 
-            return MatchType.None;
+            return new Match
+            {
+                Text = name,
+                Type = MatchType.None
+            };
         }
     }
 }
