@@ -87,7 +87,7 @@ namespace CommandLineInterface
                     {
                         foreach (var error in runResult.Errors)
                         {
-                            console.WriteLine(error);
+                            console.WriteError(error);
                         }
                     }
                     commandIndex = -1;

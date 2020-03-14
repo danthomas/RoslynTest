@@ -25,6 +25,11 @@ namespace Tests.CommandLineInterfaceTests
             _text += text + Environment.NewLine;
         }
 
+        public void WriteError(string text)
+        {
+            throw new NotImplementedException();
+        }
+
         Func<string, string> IConsole.Tab
         {
             get => _tab;

@@ -11,6 +11,14 @@ namespace TestCli
             Console.Write(text);
         }
 
+        public void WriteError(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.SetCursorPosition(0, Console.CursorTop + 1);
+            Console.Write(text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public Func<string, string> Tab { get; set; }
         public Func<string, string> Enter { get; set; }
         public Func<string> Prev { get; set; }
