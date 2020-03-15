@@ -15,6 +15,8 @@ namespace Tests.CommandLineInterfaceTests
 
         public string Text => _text.Trim();
 
+        public bool Quit { get; set; }
+
         public void Start()
         {
             throw new NotImplementedException();

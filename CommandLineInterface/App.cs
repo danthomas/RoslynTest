@@ -15,7 +15,7 @@ namespace CommandLineInterface
 
             serviceCollection.AddSingleton(console);
 
-            var quit = new Quit();
+            var quit = new Quit(console);
 
             serviceCollection.AddSingleton(quit);
 
@@ -148,22 +148,6 @@ namespace CommandLineInterface
             };
 
             console.Start();
-
-            /*while (!quit.HasQuit)
-            {
-                var line = console.ReadLine();
-                var runTaskCommand = new RunTaskCommand(line);
-
-                var runResult = taskRunner.Run(runTaskCommand);
-
-                if (!runResult.Success)
-                {
-                    foreach (var error in runResult.Errors)
-                    {
-                        console.WriteLine(error);
-                    }
-                }
-            }*/
         }
     }
 }

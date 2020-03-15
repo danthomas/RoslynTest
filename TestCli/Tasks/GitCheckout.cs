@@ -2,7 +2,7 @@
 
 namespace TestCli.Tasks
 {
-    public class GitCheckout : ITask
+    public class GitCheckout : ITask<GitCheckout.Args>
     {
         private readonly IConsole _console;
 
@@ -11,9 +11,17 @@ namespace TestCli.Tasks
             _console = console;
         }
 
-        public void Run()
+        public void Run(Args args)
         {
             _console.WriteLine("Running GitCheckout");
         }
+
+        public class Args
+        {
+            public string Branch { get; set; }
+        }
+
+        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()
+            .DefaultRequired(x => x.Branch, "b");
     }
 }

@@ -2,11 +2,16 @@ namespace CommandLineInterface
 {
     public class Quit : ITask
     {
+        private readonly IConsole _console;
+
+        public Quit(IConsole console)
+        {
+            _console = console;
+        }
+            
         public void Run()
         {
-            HasQuit = true;
+            _console.Quit = true;
         }
-
-        public bool HasQuit { get; set; }
     }
 }

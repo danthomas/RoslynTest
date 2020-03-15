@@ -4,6 +4,7 @@ namespace CommandLineInterface
 {
     public interface IConsole
     {
+        bool Quit { get; set; }
         void Start();
         void WriteLine(string text);
         void WriteError(string text);

@@ -38,7 +38,20 @@ namespace DynamicTaskRunner
             }
             else if (runTaskCommand.Name == "GitCheckout")
             {
-                _serviceProvider.GetService<GitCheckout>().Run();
+                var args = new TestCli.Tasks.GitCheckout.Args();
+                if (runTaskCommand.HasSwitch("b", "Branch", true) == false)
+                {
+                    runResult.Success = false;
+                    runResult.Errors.Add("b Branch required.");
+                }
+
+                if (runResult.Success == false)
+                {
+                    return runResult;
+                }
+
+                args.Branch = runTaskCommand.GetValue<string>("b", "Branch", true);
+                _serviceProvider.GetService<GitCheckout>().Run(args);
             }
             else if (runTaskCommand.Name == "GitCheckoutMaster")
             {

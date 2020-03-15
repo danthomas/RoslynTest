@@ -30,6 +30,8 @@ namespace TestCli
             Console.Clear();
         }
 
+        public bool Quit { get; set; }
+
         public void Start()
         {
             var line = "";
@@ -43,7 +45,7 @@ namespace TestCli
                 Console.Write(line);
             }
 
-            while (true)
+            while (!Quit)
             {
                 var c = Console.ReadKey(true);
                 if (c.Key == ConsoleKey.Tab)
