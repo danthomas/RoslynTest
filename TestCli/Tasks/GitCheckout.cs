@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run(Args args)
         {
-            _console.WriteLine("Running GitCheckout");
+            _console.WriteLine("git checkout " + args.Branch);
         }
 
         public class Args
@@ -22,6 +22,6 @@ namespace TestCli.Tasks
         }
 
         public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()
-            .DefaultRequired(x => x.Branch, "b");
+            .DefaultRequired(x => x.Branch);
     }
 }

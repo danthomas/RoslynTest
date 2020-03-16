@@ -109,6 +109,23 @@ namespace DynamicTaskRunner
             {
                 _serviceProvider.GetService<Quit>().Run();
             }
+            else if (runTaskCommand.Name == "Help")
+            {
+                var args = new CommandLineInterface.Help.Args();
+                if (runTaskCommand.HasSwitch("n", "Name", true) == false)
+                {
+                    runResult.Success = false;
+                    runResult.Errors.Add("n Name required.");
+                }
+
+                if (runResult.Success == false)
+                {
+                    return runResult;
+                }
+
+                args.Name = runTaskCommand.GetValue<string>("n", "Name", true);
+                _serviceProvider.GetService<Help>().Run(args);
+            }
 
             return runResult;
         }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using AssemblyBuilder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,18 +10,8 @@ namespace CommandLineInterface
 {
     public class TaskRunnerBuilder
     {
-        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, Assembly assembly, params Type[] tasks)
+        public ITaskRunner Build(IServiceProvider serviceProvider, IState state, List<TaskDef> taskDefs, string location)
         {
-            var taskTypes = assembly.GetTypes()
-                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask)))
-                .ToList();
-
-            taskTypes.AddRange(tasks);
-
-            Tasks = taskTypes.Select(x => x.Name).ToList();
-
-            var taskDefs = new TaskDefBuilder().Build(taskTypes.ToArray());
-
             var usings = new List<string> { "System", "Microsoft.Extensions.DependencyInjection", "CommandLineInterface" };
 
             usings.AddRange(taskDefs.Select(x => x.Namespace));
@@ -104,7 +92,7 @@ namespace CommandLineInterface
                 typeof(ITaskRunner).Assembly.Location,
                 typeof(IList).Assembly.Location,
                 typeof(IList<>).Assembly.Location,
-                assembly.Location,
+                location,
 
                 "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\3.1.1\\System.Collections.dll"
             };
@@ -112,12 +100,12 @@ namespace CommandLineInterface
             var type = new Compiler().Compile(compilationUnitBuilder.CompilationUnitSyntax, references)
                 .GetType("DynamicTaskRunner.TaskRunner");
 
-            File.WriteAllText(@"c:\temp\RoslynTest\TestCli\TaskRunner.g.cs", code);
+            //File.WriteAllText(@"c:\temp\RoslynTest\TestCli\TaskRunner.g.cs", code);
 
-            return (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
+            var taskRunner = (ITaskRunner)Activator.CreateInstance(type, serviceProvider, state);
+
+            return taskRunner;
         }
-
-        public List<string> Tasks { get; private set; }
 
         private Action<StatementSyntaxBuilder>[] BuildStatements(TaskDef taskDef)
         {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CommandLineInterface
@@ -16,8 +15,10 @@ namespace CommandLineInterface
             serviceCollection.AddSingleton(console);
 
             var quit = new Quit(console);
+            var help = new Help(console);
 
             serviceCollection.AddSingleton(quit);
+            serviceCollection.AddSingleton(help);
 
             foreach (var type in assembly.GetTypes()
                 .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask))))
@@ -31,7 +32,20 @@ namespace CommandLineInterface
 
             var patternMatcher = new PatternMatcher();
 
-            var taskRunner = taskRunnerBuilder.Build(serviceProvider, state, assembly, typeof(Quit));
+            var taskTypes = assembly.GetTypes()
+                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask)))
+                .ToList();
+
+            taskTypes.Add(typeof(Quit));
+            taskTypes.Add(typeof(Help));
+
+            var taskDefs = new TaskDefBuilder().Build(taskTypes.ToArray());
+
+            help.TaskDefs = taskDefs;
+
+            var taskNames = taskDefs.Select(x => x.Name).ToList();
+
+            var taskRunner = taskRunnerBuilder.Build(serviceProvider, state, taskDefs, assembly.Location);
 
             var commands = new List<string>();
             var commandIndex = -1;
@@ -52,7 +66,7 @@ namespace CommandLineInterface
                     var before = line.Contains(' ') ? line.Split(' ')[0] : line;
                     var after = line.Contains(' ') ? line.Split(' ')[1] : "";
 
-                    var exactMatch = taskRunnerBuilder.Tasks.SingleOrDefault(x =>
+                    var exactMatch = taskNames.SingleOrDefault(x =>
                         x.Equals(before, StringComparison.CurrentCultureIgnoreCase));
 
                     if (exactMatch != null)
@@ -63,7 +77,7 @@ namespace CommandLineInterface
                     }
                     else
                     {
-                        matches = taskRunnerBuilder.Tasks.Select(x => patternMatcher.Match(x, before))
+                        matches = taskNames.Select(x => patternMatcher.Match(x, before))
                             .Where(x => x.Type != MatchType.None)
                             .OrderBy(x => x.Type)
                             .ThenBy(x => x.Text)
@@ -105,7 +119,7 @@ namespace CommandLineInterface
 
                 if (matches == null)
                 {
-                    matches = taskRunnerBuilder.Tasks.Select(x => patternMatcher.Match(x, before))
+                    matches = taskNames.Select(x => patternMatcher.Match(x, before))
                         .Where(x => x.Type != MatchType.None)
                         .OrderBy(x => x.Type)
                         .ThenBy(x => x.Text)

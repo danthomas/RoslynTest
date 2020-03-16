@@ -48,65 +48,79 @@ namespace TestCli
             while (!Quit)
             {
                 var c = Console.ReadKey(true);
-                if (c.Key == ConsoleKey.Tab)
+                switch (c.Key)
                 {
-                    line = Tab(line);
-                    SetCurrentLine();
-                }
-                else if (c.Key == ConsoleKey.Backspace)
-                {
-                    if (line.Length > 0)
-                    {
-                        line = line.Substring(0, line.Length - 1);
+                    case ConsoleKey.Tab:
+                        line = Tab(line);
                         SetCurrentLine();
-                        KeyPress();
-                    }
-                }
-                else if (c.Key == ConsoleKey.Enter)
-                {
-                    line = Enter(line);
-                    if (line == null)
+
+                        break;
+                    case ConsoleKey.Backspace:
                     {
+                        if (line.Length > 0)
+                        {
+                            line = line.Substring(0, line.Length - 1);
+                            SetCurrentLine();
+                            KeyPress();
+                        }
+
+                        break;
+                    }
+                    case ConsoleKey.Enter:
+                    {
+                        line = Enter(line);
+                        if (line == null)
+                        {
+                            line = "";
+                            Console.SetCursorPosition(0, Console.CursorTop + 1);
+                        }
+                        else
+                        {
+                            SetCurrentLine();
+                        }
+
+                        break;
+                    }
+                    case ConsoleKey.Escape:
                         line = "";
-                        Console.SetCursorPosition(0, Console.CursorTop + 1);
-                    }
-                    else
-                    {
-                        SetCurrentLine();
-                    }
-                }
-                else if (c.Key == ConsoleKey.Escape)
-                {
-                    line = "";
-                    SetCurrentLine(); 
-                    KeyPress();
-                }
-                else if (c.Key == ConsoleKey.UpArrow)
-                {
-                    line = Prev();
-                    if (line != null)
-                    {
-                        SetCurrentLine();
+                        SetCurrentLine(); 
                         KeyPress();
-                    }
-                }   
-                else if (c.Key == ConsoleKey.DownArrow)
-                {
-                    line = Next();
-                    if (line != null)
+                        break;
+                    case ConsoleKey.UpArrow:
                     {
-                        SetCurrentLine();
-                        KeyPress();
+                        line = Prev();
+                        if (line != null)
+                        {
+                            SetCurrentLine();
+                            KeyPress();
+                        }
+
+                        break;
                     }
-                }
-                else if (IsPrintable(c))
-                {
-                    line += c.KeyChar;
-                    Console.Write(c.KeyChar);
-                    KeyPress();
+                    case ConsoleKey.DownArrow:
+                    {
+                        line = Next();
+                        if (line != null)
+                        {
+                            SetCurrentLine();
+                            KeyPress();
+                        }
+
+                        break;
+                    }
+                    default:
+                    {
+                        if (IsPrintable(c))
+                        {
+                            line += c.KeyChar;
+                            Console.Write(c.KeyChar);
+                            KeyPress();
+                        }
+
+                        break;
+                    }
                 }
             }
-
         }
 
         private bool IsPrintable(in ConsoleKeyInfo consoleKeyInfo)
