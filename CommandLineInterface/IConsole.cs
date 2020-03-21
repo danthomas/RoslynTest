@@ -6,7 +6,8 @@ namespace CommandLineInterface
     {
         bool Quit { get; set; }
         void Start();
-        void WriteLine(string text);
+        void WriteInfo(string text);
+        void WriteWarning(string text);
         void WriteError(string text);
         Func<string, string> Tab { get; set; }
         Func<string, string> Enter { get; set; }

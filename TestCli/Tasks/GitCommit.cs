@@ -2,7 +2,7 @@
 
 namespace TestCli.Tasks
 {
-    public class GitCommit : ITask
+    public class GitCommit : ITask<GitCommit.Args>
     {
         private readonly IConsole _console;
 
@@ -11,9 +11,17 @@ namespace TestCli.Tasks
             _console = console;
         }
 
-        public void Run()
+        public void Run(Args args)
         {
-            _console.WriteLine("Running GitCommit");
+            _console.WriteInfo($"git commit -m \"{args.Message}\"");
         }
+
+        public class Args
+        {
+            public string Message { get; set; }
+        }
+
+        public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()
+            .DefaultRequired(x => x.Message);
     }
 }

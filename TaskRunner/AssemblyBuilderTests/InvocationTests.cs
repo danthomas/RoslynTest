@@ -197,7 +197,8 @@ namespace TestNamespace
         public void InvocationWithMemberAccess()
         {
             /*
-*/
+             * _state.GetState<List<TestCli.Solution>>()
+             */
 
             var compilationUnitBuilder = new CompilationUnitBuilder()
                 .WithUsings("System")
@@ -208,9 +209,8 @@ namespace TestNamespace
                             .WithStatements(sb => sb
                                 .WithReturnStatement(rsb => rsb.WithExpression(esb3 => esb3
                                     .WithInvocation(ieb2 => ieb2
-                                        .WithMemberAccess("runResult", "Errors")
-                                        .WithIdentifier("Add")
-                                        .WithArguments(asb => asb.WithExpression(esb => esb.WithIdentifier("s"))))))))));
+                                        .WithExpression(eb => eb.WithIdentifier("_state"))
+                                        .WithGenericIdentifier("GetState", tsb => tsb.WithGenericName("List", tsb => tsb.WithName("Abcd.Efg"))))))))));
 
             var actual = compilationUnitBuilder.CompilationUnitSyntax.NormalizeWhitespace().ToFullString();
         }

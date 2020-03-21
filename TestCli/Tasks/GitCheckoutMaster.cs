@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run()
         {
-            _console.WriteLine("Running GitCheckoutMaster");
+            _console.WriteInfo("Running GitCheckoutMaster");
         }
     }
 }

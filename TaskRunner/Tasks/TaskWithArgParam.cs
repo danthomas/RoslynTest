@@ -19,7 +19,7 @@ namespace Tests.Tasks
 
         public void Run(Args args)
         {
-            _console.WriteLine($"TaskWithArgParam {args.StringProp} {args.BoolProp}");
+            _console.WriteInfo($"TaskWithArgParam {args.StringProp} {args.BoolProp}");
         }
     }
 }

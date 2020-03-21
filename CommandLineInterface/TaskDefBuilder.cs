@@ -85,7 +85,15 @@ namespace CommandLineInterface
 
         private static ParamDef BuildParamDef(ParameterInfo x, Type type)
         {
+
             var typeNames = x.ParameterType.FullName;
+            var isList = false;
+
+            if (x.ParameterType.IsGenericType && x.ParameterType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                typeNames = x.ParameterType.GetGenericArguments()[0].FullName;
+                isList = true;
+            }
 
             var isArgs = false;
 
@@ -100,6 +108,7 @@ namespace CommandLineInterface
                 Name = x.Name,
                 Namespace = x.ParameterType.Namespace,
                 Type = typeNames,
+                IsList = isList,
                 IsArgs = isArgs
             };
         }

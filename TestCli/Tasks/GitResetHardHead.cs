@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run()
         {
-            _console.WriteLine("Running GitResetHardHead");
+            _console.WriteInfo("Running GitResetHardHead");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run(Args args)
         {
-            _console.WriteLine("git checkout " + args.Branch);
+            _console.WriteInfo("git checkout " + args.Branch);
         }
 
         public class Args

@@ -37,6 +37,24 @@ namespace AssemblyBuilder
             return this;
         }
 
+        public InvocationExpressionBuilder WithGenericIdentifier(string name, params Action<TypeSyntaxBuilder2>[] snotbs)
+        {
+            var expressionSyntax = (MemberAccessExpressionSyntax)InvocationExpression.Expression;
+
+            var syntaxNodes = snotbs.Select(x =>
+            {
+                var nodeOrTokenBuilder = new TypeSyntaxBuilder2();
+                x(nodeOrTokenBuilder);
+                return nodeOrTokenBuilder.TypeSyntax;
+            }).ToList();
+
+            InvocationExpression = InvocationExpression
+                .WithExpression(expressionSyntax.WithName(SyntaxFactory.GenericName(name)
+                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList<TypeSyntax>(
+                        syntaxNodes
+                    )))));
+            return this;
+        }
         public InvocationExpressionBuilder WithGenericIdentifier(string name, params string[] genericArgs)
         {
             var expressionSyntax = (MemberAccessExpressionSyntax)InvocationExpression.Expression;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommandLineInterface;
 using Tests.CommandLineInterfaceTests;
 
@@ -18,9 +19,9 @@ namespace Tests.Tasks
             public string StringProp { get; set; }
         }
 
-        public void Run(Args args, Solution solution)
+        public void Run(Args args, List<Solution> solution)
         {
-            _console.WriteLine($"TaskWithArgDefsAndParams {solution.Id} {args.StringProp} {args.BoolProp}");
+            _console.WriteInfo($"TaskWithArgDefsAndParams {solution[0].Id} {args.StringProp} {args.BoolProp}");
         }
 
         public ArgDefs<Args> ArgDefs => new ArgDefs<Args>()

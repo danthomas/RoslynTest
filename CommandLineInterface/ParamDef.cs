@@ -6,5 +6,6 @@ namespace CommandLineInterface
         public string Type { get; set; }
         public bool IsArgs { get; set; }
         public string Namespace { get; set; }
+        public bool IsList { get; set; }
     }
 }

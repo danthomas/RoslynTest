@@ -1,4 +1,5 @@
-﻿using CommandLineInterface;
+﻿using System.Collections.Generic;
+using CommandLineInterface;
 
 namespace TestCli
 {
@@ -11,6 +12,10 @@ namespace TestCli
             if (typeof(T) == typeof(Thing))
             {
                 @object = Thing;
+            }
+            else if (typeof(T) == typeof(List<Thing>))
+            {
+                @object = new List<Thing> { Thing };
             }
 
             return (T)@object;

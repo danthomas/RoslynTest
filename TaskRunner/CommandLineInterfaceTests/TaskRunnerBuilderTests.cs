@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CommandLineInterface;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -26,8 +27,14 @@ namespace Tests.CommandLineInterfaceTests
                 Solution = new Solution { Id = 123 }
             };
 
+            var taskTypes = typeof(TaskWithArgParam).Assembly.GetTypes()
+                .Where(x => x.IsClass && x.GetInterfaces().Contains(typeof(ITask)))
+                .ToList();
+
+            var taskDefs = new TaskDefBuilder().Build(taskTypes.ToArray());
+
             var taskRunner = new TaskRunnerBuilder()
-                .Build(serviceProvider, state, typeof(TaskWithArgParam).Assembly);
+                .Build(serviceProvider, state, taskDefs, typeof(TaskWithArgParam).Assembly.Location);
 
             //taskRunner = new DynamicTaskRunner.TaskRunner(serviceProvider, state);
 

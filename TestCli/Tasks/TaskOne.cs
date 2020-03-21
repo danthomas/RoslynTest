@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run()
         {
-            _console.WriteLine("Running TaskOne");
+            _console.WriteInfo("Running TaskOne");
         }
     }
 }

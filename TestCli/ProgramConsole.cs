@@ -5,15 +5,24 @@ namespace TestCli
 {
     public class ProgramConsole : IConsole
     {
-        public void WriteLine(string text)
+        public void WriteInfo(string text)
         {
-            Console.SetCursorPosition(0, Console.CursorTop + 1);
-            Console.Write(text);
+            WriteLine(text, ConsoleColor.DarkCyan);
+        }
+
+        public void WriteWarning(string text)
+        {
+            WriteLine(text, ConsoleColor.DarkYellow);
         }
 
         public void WriteError(string text)
         {
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            WriteLine(text, ConsoleColor.DarkRed);
+        }
+
+        private static void WriteLine(string text, ConsoleColor consoleColor)
+        {
+            Console.ForegroundColor = consoleColor;
             Console.SetCursorPosition(0, Console.CursorTop + 1);
             Console.Write(text);
             Console.ForegroundColor = ConsoleColor.White;

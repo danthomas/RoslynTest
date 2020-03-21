@@ -22,9 +22,14 @@ namespace Tests.CommandLineInterfaceTests
             throw new NotImplementedException();
         }
 
-        public void WriteLine(string text)
+        public void WriteInfo(string text)
         {
             _text += text + Environment.NewLine;
+        }
+
+        public void WriteWarning(string text)
+        {
+            throw new NotImplementedException();
         }
 
         public void WriteError(string text)

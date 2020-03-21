@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run(Args args)
         {
-            _console.WriteLine("TaskThree " + args.Name);
+            _console.WriteInfo("TaskThree " + args.Name);
         }
 
         public class Args

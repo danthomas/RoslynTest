@@ -15,7 +15,7 @@ namespace CommandLineInterface
 
         public void Run(Args args)
         {
-            var taskDef = TaskDefs.SingleOrDefault(x => x.Name == args.Name);
+            var taskDef = TaskDefs.SingleOrDefault(x => x.Name.Equals(args.Name, StringComparison.CurrentCultureIgnoreCase));
 
             var taskDefs = TaskDefs
                 .Where(x => string.IsNullOrWhiteSpace(args.Name) || x.Name.Contains(args.Name, StringComparison.CurrentCultureIgnoreCase))
@@ -38,14 +38,14 @@ namespace CommandLineInterface
                     taskDefName += argsPropDef.IsRequired ? "" : "]";
                 }
 
-                _console.WriteLine(taskDefName);
+                _console.WriteInfo(taskDefName);
             }
             else
             {
                 foreach (var td in taskDefs
                     .OrderBy(x => x.Name))
                 {
-                    _console.WriteLine(td.Name);
+                    _console.WriteInfo(td.Name);
                 }
             }
         }

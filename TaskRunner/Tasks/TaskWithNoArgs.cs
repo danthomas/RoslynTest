@@ -13,7 +13,7 @@ namespace Tests.Tasks
 
         public void Run()
         {
-            _console.WriteLine("TaskWithNoArgs");
+            _console.WriteInfo("TaskWithNoArgs");
         }
     }
 }

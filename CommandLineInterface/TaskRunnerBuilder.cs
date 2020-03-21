@@ -196,12 +196,26 @@ namespace CommandLineInterface
                 }
                 else
                 {
-                    arguments.Add(asb => asb
-                        .WithExpression(esb => esb
-                            .WithInvocation(ieb => ieb
-                                .WithExpression(esb2 => esb2
-                                    .WithIdentifier("_state"))
-                                .WithGenericIdentifier("GetState", taskDefParamDef.Type))));
+                    if (taskDefParamDef.IsList)
+                    {
+                        arguments.Add(asb => asb
+                            .WithExpression(esb => esb
+                                .WithInvocation(ieb => ieb
+                                    .WithExpression(esb2 => esb2
+                                        .WithIdentifier("_state"))
+                                    .WithGenericIdentifier("GetState", tsb => tsb
+                                        .WithGenericName("List", tsb2 => tsb2
+                                            .WithName(taskDefParamDef.Type))))));
+                    }
+                    else
+                    {
+                        arguments.Add(asb => asb
+                            .WithExpression(esb => esb
+                                .WithInvocation(ieb => ieb
+                                    .WithExpression(esb2 => esb2
+                                        .WithIdentifier("_state"))
+                                    .WithGenericIdentifier("GetState", taskDefParamDef.Type))));
+                    }
                 }
             }
 

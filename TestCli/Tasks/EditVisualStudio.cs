@@ -13,7 +13,7 @@ namespace TestCli.Tasks
 
         public void Run()
         {
-            _console.WriteLine("Running EditVisualStudio");
+            _console.WriteInfo("Running EditVisualStudio");
         }
     }
 }

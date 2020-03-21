@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommandLineInterface;
 
 namespace Tests.CommandLineInterfaceTests
@@ -6,9 +7,9 @@ namespace Tests.CommandLineInterfaceTests
     {
         public T GetState<T>() where T : class
         {
-            if (typeof(T) == typeof(Solution))
+            if (typeof(T) == typeof(List<Solution>))
             {
-                return Solution as T;
+                return new List<Solution> { Solution } as T;
             }
 
             return default;
